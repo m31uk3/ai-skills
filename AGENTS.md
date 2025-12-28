@@ -19,13 +19,13 @@ This repository contains the universal pattern for building reliable AI workflow
 .
 ├── README.md              # Human-focused overview
 ├── AGENTS.md             # This file - AI agent guidance
+├── FAQs.md               # Common questions and disambiguation
 ├── skills/               # Individual skill definitions
 │   ├── ai--workflow-engineering/
 │   │   └── SKILL.md     # Meta-pattern for creating workflows
 │   └── comms--response-quality-analysis/
 │       └── SKILL.md     # Example: Response quality workflow
 └── docs/                 # Documentation
-    ├── FAQs.md          # Common questions and disambiguation
     ├── REFERENCES.md    # Citations and system comparisons
     └── SKILL-vs-SOP-FORMAT-COMPARISON.md
 ```
@@ -213,7 +213,7 @@ This repository follows and relates to:
 - **[POWER.md](https://kiro.dev/blog/introducing-powers/)** - Kiro Powers format
 - **.sop.md** - Platform-agnostic SOP format
 
-See [`docs/FAQs.md`](docs/FAQs.md) for disambiguation and format comparison.
+See [`FAQs.md`](FAQs.md) for disambiguation and format comparison.
 
 ## Contributing
 
@@ -235,7 +235,7 @@ See [`docs/REFERENCES.md`](docs/REFERENCES.md) for citations and background on t
 
 ## Questions?
 
-- **Format questions:** See [`docs/FAQs.md`](docs/FAQs.md)
+- **Format questions:** See [`FAQs.md`](FAQs.md)
 - **Pattern questions:** Read [`skills/ai--workflow-engineering/SKILL.md`](skills/ai--workflow-engineering/SKILL.md)
 - **Reference systems:** Check [`docs/REFERENCES.md`](docs/REFERENCES.md)
 

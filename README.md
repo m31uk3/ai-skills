@@ -166,7 +166,7 @@ flowchart TD
 
 ## Why This Pattern Emerges
 
-**📖 [See detailed explanation in FAQs.md](docs/FAQs.md#why-this-pattern-emerges)**
+**📖 [See detailed explanation in FAQs.md](FAQs.md#why-this-pattern-emerges)**
 
 Multiple teams independently discovered these patterns within a 12-month window (2024-2025) because they address fundamental challenges in managing LLM uncertainty: probabilistic outputs, complex task decomposition, limited context, and human-AI collaboration.
 

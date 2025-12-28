@@ -1,6 +1,6 @@
 # .sop.md vs SKILL.md: Format Comparison
 
-> **See also:** [FAQs.md](FAQs.md) for common questions about AI workflows and skills
+> **See also:** [FAQs.md](../FAQs.md) for common questions about AI workflows and skills
 
 ## Overview
 

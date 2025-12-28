@@ -282,7 +282,7 @@ For **project-level** guidance, see:
 
 For **workflow patterns**, see:
 - [AI Workflow Engineering](../skills/ai--workflow-engineering/SKILL.md) - Meta-pattern for creating SOPs
-- [FAQs.md](FAQs.md) - Format disambiguation and pattern convergence
+- [FAQs.md](../FAQs.md) - Format disambiguation and pattern convergence
 
 ---
 

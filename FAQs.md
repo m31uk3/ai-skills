@@ -129,9 +129,9 @@ Task/Workflow Level:
 ```
 
 **See also:**
-- [SKILL-vs-SOP-FORMAT-COMPARISON.md](SKILL-vs-SOP-FORMAT-COMPARISON.md) for detailed format differences
-- [REFERENCES.md](REFERENCES.md) for full citations and links to all systems
-- [slash-commands-vs-skills.md](slash-commands-vs-skills.md) for Claude Code-specific differences
+- [SKILL-vs-SOP-FORMAT-COMPARISON.md](docs/SKILL-vs-SOP-FORMAT-COMPARISON.md) for detailed format differences
+- [REFERENCES.md](docs/REFERENCES.md) for full citations and links to all systems
+- [slash-commands-vs-skills.md](docs/slash-commands-vs-skills.md) for Claude Code-specific differences
 
 ---
 
@@ -175,4 +175,4 @@ Ask yourself: **Who should decide when this runs?**
 
 Don't optimize for today's mechanics. Optimize for the intended use case.
 
-**Full analysis:** See [slash-commands-vs-skills.md](slash-commands-vs-skills.md) for decision matrix, context management patterns, and official Anthropic statements.
+**Full analysis:** See [slash-commands-vs-skills.md](docs/slash-commands-vs-skills.md) for decision matrix, context management patterns, and official Anthropic statements.
