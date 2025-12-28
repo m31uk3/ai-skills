@@ -6,9 +6,15 @@
 
 ### What They Are
 
+**Official definition (Anthropic):**
+
+> "Skills are model-invoked capabilities that Claude autonomously uses based on task context. Unlike commands (user-invoked) or agents (spawned by Claude), skills provide contextual guidance that Claude incorporates into its responses."
+
+**In practice:**
+
 **Slash Commands** are user-facing instruction packages. Type `/my-command` to execute predefined workflows. Think lightweight endpoints with handlers.
 
-**Skills** are Claude-facing knowledge packages. Claude invokes them automatically when relevant, or you can call them manually with `/skill-name`. Think service layer that loads on-demand.
+**Skills** are Claude-facing knowledge packages with progressive disclosure. Claude invokes them automatically when relevant, or you can call them manually with `/skill-name`. Think service layer that loads on-demand with bundled resources (references, examples, scripts).
 
 Both are reusable instruction sets that load into conversation context. Both can be invoked by users OR Claude.
 
@@ -32,8 +38,10 @@ Anthropic designed them with distinct purposes despite similar mechanics:
 | **Primary invoker** | Claude (automatic) | User (manual) |
 | **Design intent** | On-demand knowledge | Standardized workflows |
 | **Discovery** | Claude decides relevance | User knows what to call |
-| **Loading pattern** | Progressive disclosure | Each invocation loads fresh |
-| **Best for** | API docs, style guides, templates | PR formatting, test running, refactors |
+| **Loading pattern** | Progressive disclosure (3 levels) | Each invocation loads fresh |
+| **Structure** | SKILL.md + references/ + examples/ + scripts/ | Single .md file |
+| **Content size** | SKILL.md: 1,500-2,000 words + unlimited refs | Typically 100-5,000 words |
+| **Best for** | API docs, style guides, domain expertise | PR formatting, test running, refactors |
 | **Invocation limit** | Once per conversation (observed) | Multiple times per conversation |
 | **Autocomplete** | May not show in autocomplete | Shows in autocomplete |
 
@@ -66,8 +74,10 @@ You want **Claude to decide** when instructions are relevant:
 - Code style guides that apply to certain file types
 - Complex file manipulation templates
 - Framework-specific best practices
+- Domain expertise requiring references, examples, or scripts
+- Content needs progressive disclosure (core + detailed references)
 
-**Example:** Database schema skill loads automatically when you discuss database structure.
+**Example:** Database schema skill loads automatically when you discuss database structure. Core schema overview in SKILL.md (1,500 words), detailed table relationships in `references/schema.md` (5,000 words).
 
 ### Use Slash Commands When
 
@@ -94,10 +104,25 @@ Both live in the same library. Both get read into the conversation. But you choo
 
 Skills use "progressive disclosure" - they load only when relevant. This keeps context clean.
 
-**How it works (from Anthropic):**
-1. Model sees only skill description/name initially
-2. Model decides if it needs to invoke the skill
-3. When invoked, full content loads into context
+**Three-level loading system (official Anthropic architecture):**
+
+1. **Level 1: Metadata** (always in context)
+   - Skill name + description (~100 words)
+   - Always loaded for all available skills
+   - Claude uses this to decide whether to invoke
+
+2. **Level 2: SKILL.md body** (loaded when skill triggers)
+   - Core instructions and guidance
+   - Recommended: 1,500-2,000 words
+   - Maximum: <5,000 words
+   - Loaded when Claude or user invokes skill
+
+3. **Level 3: Bundled resources** (loaded as needed)
+   - **`references/`** - Detailed docs, patterns, API refs
+   - **`examples/`** - Working code examples
+   - **`scripts/`** - Utility scripts (can execute without loading to context)
+   - Claude loads these only when needed
+   - Each reference file can be 2,000-5,000+ words
 
 **Pattern:** Skill loads once, stays in conversation history at invocation point.
 
@@ -174,6 +199,116 @@ Multi-step workflows with isolated context. Different from both skills and comma
 
 **Agents** handle complex tasks autonomously. **Skills** provide knowledge. **Commands** execute single-shot tasks.
 
+## Skill Architecture Best Practices
+
+These guidelines come from official Anthropic plugin development documentation.
+
+### Skill Directory Structure
+
+**Minimal skill:**
+```
+skills/skill-name/
+└── SKILL.md (required)
+```
+
+**Standard skill (recommended):**
+```
+skills/skill-name/
+├── SKILL.md
+├── references/           # Detailed docs (2k-5k+ words each)
+│   └── patterns.md
+└── examples/            # Working code examples
+    └── example.sh
+```
+
+**Complete skill:**
+```
+skills/skill-name/
+├── SKILL.md             # Core (1,500-2,000 words)
+├── references/          # Detailed documentation
+│   ├── patterns.md
+│   └── advanced.md
+├── examples/            # Working examples
+│   └── sample.sh
+└── scripts/             # Utility scripts
+    └── validate.sh
+```
+
+### SKILL.md Frontmatter
+
+Required fields using third-person format:
+
+```yaml
+---
+name: Skill Name
+description: This skill should be used when the user asks to "specific phrase 1", "specific phrase 2", or mentions "keyword". Include exact trigger phrases.
+version: 1.0.0
+---
+```
+
+**Good description examples:**
+```yaml
+description: This skill should be used when the user asks to "create a hook", "add a PreToolUse hook", "validate tool use", or mentions hook events.
+```
+
+**Bad description examples:**
+```yaml
+description: Use this skill for hooks.           # Wrong person, vague
+description: Provides hook guidance.              # No trigger phrases
+```
+
+### Writing Style Requirements
+
+**SKILL.md body:** Use imperative/infinitive form (not second person)
+
+**Correct:**
+```markdown
+To create a skill, define the frontmatter.
+Configure the structure with bundled resources.
+Validate the trigger description.
+```
+
+**Incorrect:**
+```markdown
+You should create a skill by defining the frontmatter.
+You need to configure the structure.
+You must validate the description.
+```
+
+### Progressive Disclosure Strategy
+
+**SKILL.md (1,500-2,000 words):**
+- Core concepts and overview
+- Essential procedures
+- Quick reference tables
+- Pointers to references/examples
+- Most common use cases
+
+**references/ (unlimited):**
+- Detailed patterns and techniques
+- API documentation
+- Migration guides
+- Edge cases and troubleshooting
+- Comprehensive walkthroughs
+
+**examples/ (unlimited):**
+- Complete, runnable code
+- Configuration templates
+- Real-world usage
+
+**scripts/ (unlimited):**
+- Validation utilities
+- Testing helpers
+- Can execute without loading to context
+
+### Auto-Discovery
+
+Claude Code automatically:
+- Scans `skills/` directories in plugins
+- Loads skill metadata (name + description) always
+- Loads SKILL.md body when skill triggers
+- Loads references/examples when Claude determines need
+
 ## Practical Recommendations
 
 ### For Individual Contributors
@@ -201,9 +336,13 @@ Multi-step workflows with isolated context. Different from both skills and comma
 - Does it need to load multiple times? (Yes → Command, No → Skill)
 - Is it knowledge or workflow? (Knowledge → Skill, Workflow → Command)
 - Does user need explicit control? (Yes → Command, No → Skill)
-- How large is the content? (>3k tokens → Consider context impact)
+- How large is the content? (>3k tokens → Consider skill with references/)
+- Would bundled resources help? (Yes → Skill with references/examples/scripts/)
 - Should model auto-invoke? (No → Add disable-model-invocation: true)
 ```
+
+See the **Skill Architecture Best Practices** section below for detailed structure guidance.
+
 
 ### Slash Command Frontmatter Options
 
@@ -287,6 +426,8 @@ For **workflow patterns**, see:
 ---
 
 **Source Validation:**
+- Official Anthropic plugin-dev skill documentation (`~/.claude/plugins/.../plugin-dev/skills/skill-development/SKILL.md`) - Progressive disclosure architecture, writing style requirements, best practices (HIGH reliability)
+- Official Anthropic example-skill (`~/.claude/plugins/.../example-plugin/skills/example-skill/SKILL.md`) - Official definition and structure template (HIGH reliability)
 - [GitHub Issue #13115](https://github.com/anthropics/claude-code/issues/13115) - Official Anthropic responses from dicksontsai (HIGH reliability)
 - [Twitter/X @dexhorthy thread](https://x.com/dexhorthy/status/2003656814995603809) - Includes responses from Boris Cherny (Claude Code team) and Thariq (@trq212, Anthropic) on context management, double-loading issue, and frontmatter flags (HIGH reliability)
 - Reddit r/ClaudeAI discussion - Community explanation and confusion examples (MEDIUM reliability)
