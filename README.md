@@ -9,13 +9,13 @@
 - [Quick Start](#quick-start)
 - [What Is This?](#what-is-this)
 - [The Core Insight](#the-core-insight)
-- [What's Included](#whats-included)
-- [The Universal Pattern](#the-universal-pattern)
-- [The 7 Universal Principles](#the-7-universal-principles)
 - [How to Use This](#how-to-use-this)
+- [Example Skills](#example-skills)
+- [The Universal Pattern](#the-universal-pattern)
+- [Why This Pattern Emerges](#why-this-pattern-emerges)
+- [The 7 Universal Principles](#the-7-universal-principles)
 - [Example Domains](#example-domains)
 - [Real-World Impact](#real-world-impact)
-- [Files in This Repository](#files-in-this-repository)
 - [Meta-Pattern Validation](#meta-pattern-validation)
 - [Related Patterns in the Wild](#related-patterns-in-the-wild)
 - [Contributing](#contributing)
@@ -59,7 +59,34 @@ This pattern has also emerged in **Spec-Driven Development (SDD)** tools like Ki
 | CI/CD gates | Decision points |
 | Design patterns | SOPs/workflows |
 
-## What's Included
+## How to Use This
+
+### To Create a New Workflow
+
+1. Read [`skills/ai--workflow-engineering/SKILL.md`](skills/ai--workflow-engineering/SKILL.md) - the meta-SOP
+2. Follow its steps to create your workflow
+3. Use [`skills/comms--response-quality-analysis/SKILL.md`](skills/comms--response-quality-analysis/SKILL.md) as a reference example
+4. Run validation checklist to verify completeness
+
+### To Improve Existing Workflows
+
+1. Check against the 7 universal principles
+2. Add missing phases (intake validation, checkpoints, etc.)
+3. Make constraints explicit (convert to MUST/SHOULD/MAY)
+4. Add validation tests and quality metrics
+
+### To Deploy Workflows
+
+Workflows created with this pattern can be used as:
+
+- **Claude Skills** (upload `SKILL.md` to Claude.ai via Projects → Knowledge)
+- **MCP Server prompts** (use in Claude Code)
+- **Agent system prompts** (with Strands or similar frameworks)
+- **Documentation** (human-readable process guides)
+
+All skills in this repository follow the Claude Skills format with structured metadata and can be directly uploaded to Claude.ai projects.
+
+## Example Skills
 
 ### 1. Meta-SOP: AI Workflow Engineering Pattern
 **Skill:** `ai--workflow-engineering`
@@ -140,29 +167,9 @@ All successful AI workflows follow this structure:
 
 ## Why This Pattern Emerges
 
-This isn't coincidence—it's fundamental to managing LLM uncertainty.
+**📖 [See detailed explanation in FAQs.md](FAQs.md#why-this-pattern-emerges)**
 
-Multiple teams independently discovered these patterns within a 12-month window (2024-2025), suggesting they represent fundamental solutions to common challenges, not arbitrary design choices.
-
-### 1. LLMs are probabilistic, not deterministic
-- Need **constraints** to bound the solution space
-- Need **validation gates** to prevent drift
-- Need **human checkpoints** at critical decision points
-
-### 2. Complex tasks require decomposition
-- LLMs struggle with large, ambiguous problems
-- **Explicit steps** with **clear outputs** work
-- **Iterative refinement** handles emergence better than one-shot
-
-### 3. Context is limited and expensive
-- Can't hold everything in context at once
-- Need **intentional compaction**
-- Need **checkpoint artifacts** to resume work
-
-### 4. Human-AI collaboration requires structure
-- Humans need **decision points**, not auto-pilot
-- AI needs **explicit permission** to proceed
-- Both need **shared understanding** of state
+Multiple teams independently discovered these patterns within a 12-month window (2024-2025) because they address fundamental challenges in managing LLM uncertainty: probabilistic outputs, complex task decomposition, limited context, and human-AI collaboration.
 
 ## The 7 Universal Principles
 
@@ -202,33 +209,6 @@ All reliable AI workflows follow these principles:
 - Rigid structure (phases, checkpoints)
 - Flexible content (adapt to domain)
 - Hard constraints (MUST) for critical paths
-
-## How to Use This
-
-### To Create a New Workflow
-
-1. Read [`skills/ai--workflow-engineering/SKILL.md`](skills/ai--workflow-engineering/SKILL.md) - the meta-SOP
-2. Follow its steps to create your workflow
-3. Use [`skills/comms--response-quality-analysis/SKILL.md`](skills/comms--response-quality-analysis/SKILL.md) as a reference example
-4. Run validation checklist to verify completeness
-
-### To Improve Existing Workflows
-
-1. Check against the 7 universal principles
-2. Add missing phases (intake validation, checkpoints, etc.)
-3. Make constraints explicit (convert to MUST/SHOULD/MAY)
-4. Add validation tests and quality metrics
-
-### To Deploy Workflows
-
-Workflows created with this pattern can be used as:
-
-- **Claude Skills** (upload `SKILL.md` to Claude.ai via Projects → Knowledge)
-- **MCP Server prompts** (use in Claude Code)
-- **Agent system prompts** (with Strands or similar frameworks)
-- **Documentation** (human-readable process guides)
-
-All skills in this repository follow the Claude Skills format with structured metadata and can be directly uploaded to Claude.ai projects.
 
 ## Example Domains
 
@@ -292,6 +272,8 @@ Use this checklist to verify your workflow follows the pattern:
 This meta-pattern is designed to evolve. As you build workflows and discover new patterns or principles, they should be added to the meta-SOP at [`skills/ai--workflow-engineering/SKILL.md`](skills/ai--workflow-engineering/SKILL.md).
 
 New workflow examples should be added as new skills in the `skills/` directory following the naming convention: `{category}--{workflow-name}/SKILL.md`
+
+If you're building AI workflows and discovering new patterns, consider contributing them here.
 
 Consider this a living document capturing the emerging discipline of **AI workflow engineering**.
 
@@ -364,32 +346,6 @@ This pattern represents the convergence of multiple independent discoveries. As 
 **This is programming for the age of LLMs.**
 
 ---
-
-## Files in This Repository
-
-```
-.
-├── README.md (this file)
-├── REFERENCES.md (citations and resources)
-└── skills/
-    ├── ai--workflow-engineering/
-    │   └── SKILL.md
-    └── comms--response-quality-analysis/
-        └── SKILL.md
-```
-
-**Available Skills:**
-- [`ai--workflow-engineering`](skills/ai--workflow-engineering/SKILL.md) - Meta-pattern for creating AI workflows
-- [`comms--response-quality-analysis`](skills/comms--response-quality-analysis/SKILL.md) - Response quality analysis workflow
-
-**Documentation:**
-- [`REFERENCES.md`](REFERENCES.md) - Full citations, URLs, and background on converging systems
-
-## Questions?
-
-This is a pattern language for AI workflows. Like Christopher Alexander's "A Pattern Language" for architecture, it captures patterns that emerge when solving similar problems.
-
-If you're building AI workflows and discovering new patterns, consider contributing them here.
 
 ## References
 
