@@ -46,6 +46,7 @@ Context engineering principles for coding agents with human-in-the-loop checkpoi
 
 **Tools Referenced:**
 - **Kiro:** https://kiro.dev/ - Requirements → Design → Tasks workflow
+  - **Kiro Powers:** https://kiro.dev/blog/introducing-powers/ - POWER.md format with dynamic MCP tool loading
 - **spec-kit (GitHub):** https://github.com/github/spec-kit - Constitution → Specify → Plan → Tasks
 - **Tessl Framework:** https://docs.tessl.io/ - Spec → Generated Code
 
@@ -54,6 +55,33 @@ Demonstrates the same pattern applied to software development with specification
 
 **Relevance:**
 Validates that the AI Workflow Engineering pattern extends beyond workflow design into code generation, further proving its universal nature. Shows the same challenges (human control, validation, iterative steps) being solved with similar patterns.
+
+### 4. Kiro Powers
+
+**Main Resource:**
+- **Introducing Powers:** https://kiro.dev/blog/introducing-powers/
+  - Published by Kiro team
+  - Introduces POWER.md format for bundling MCP tools with framework expertise
+  - Keyword-based dynamic activation to prevent context overflow
+  - Community-buildable and shareable via GitHub
+
+**Key Innovation:**
+Powers bundle three components:
+1. `POWER.md` - Onboarding manual with frontmatter defining activation keywords
+2. MCP server configuration with tools and connections
+3. Additional steering files and hooks
+
+**How It Works:**
+- Powers activate dynamically based on keywords in conversation
+- Mentioning "database" loads Supabase tools + best practices
+- Switching to design work loads Figma, deactivating Supabase
+- Prevents traditional MCP problem of loading 50,000+ tokens upfront
+
+**Supported Partners:**
+Datadog, Dynatrace, Figma, Neon, Netlify, Postman, Supabase, Stripe, Strands Agent
+
+**Key Contribution:**
+Demonstrates the same pattern (structured specs with frontmatter triggering) applied to MCP tool management. POWER.md files are conceptually similar to SKILL.md but focused on tool bundling with expertise.
 
 ## Related Concepts & Historical Context
 
@@ -83,14 +111,14 @@ Design patterns that emerge independently when different people solve similar pr
 
 ## Key Principles Across All Systems
 
-| Principle | Strands/PDD | HumanLayer | SDD Tools | Our Meta-Pattern |
-|-----------|-------------|------------|-----------|------------------|
-| Explicit constraints | MUST/SHOULD/MAY | Context files | Constitution | RFC 2119 language |
-| Human checkpoints | Agent SOPs | Review gates | Spec validation | Decision points |
-| Structured phases | PDD workflow | 4-phase cycle | Multi-stage | 5-phase universal |
-| Artifacts as truth | SOP files | claude.md | Spec files | Checkpoint artifacts |
-| Iterative refinement | Iterative loops | Plan → Implement → Review | Small steps | Non-linear phases |
-| Validation gates | Testing | Context validation | Checklists | Quality metrics |
+| Principle | Strands/PDD | HumanLayer | SDD Tools | Kiro Powers | Our Meta-Pattern |
+|-----------|-------------|------------|-----------|-------------|------------------|
+| Explicit constraints | MUST/SHOULD/MAY | Context files | Constitution | Frontmatter keywords | RFC 2119 language |
+| Human checkpoints | Agent SOPs | Review gates | Spec validation | Tool approval | Decision points |
+| Structured phases | PDD workflow | 4-phase cycle | Multi-stage | Dynamic loading | 5-phase universal |
+| Artifacts as truth | SOP files | claude.md | Spec files | POWER.md | Checkpoint artifacts |
+| Iterative refinement | Iterative loops | Plan → Implement → Review | Small steps | Context-aware switching | Non-linear phases |
+| Validation gates | Testing | Context validation | Checklists | Keyword matching | Quality metrics |
 
 ## Timeline of Convergence
 

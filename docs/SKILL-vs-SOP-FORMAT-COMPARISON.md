@@ -1,5 +1,7 @@
 # .sop.md vs SKILL.md: Format Comparison
 
+> **See also:** [FAQs.md](FAQs.md) for common questions about AI workflows and skills
+
 ## Overview
 
 You now have **both formats** for the AI workflow engineering pattern:
@@ -441,25 +443,6 @@ python convert-sop-to-agent.py response-quality.sop.md
 - Skip troubleshooting
 - Omit examples
 - Leave gaps in reasoning
-
----
-
-## Files You Have
-
-```
-📁 outputs/
-├── README.md                          # Overview of meta-pattern
-├── sop-pattern.sop.md                 # Full meta-SOP (platform-agnostic)
-├── SKILL.md                          # Meta-pattern as Claude Skill
-├── response-quality.sop.md            # Full response analysis SOP
-└── response-quality-SKILL.md          # Response analysis as Claude Skill
-```
-
-### File Sizes
-- `sop-pattern.sop.md`: 38 KB (complete reference)
-- `SKILL.md`: 19 KB (condensed for Claude)
-- `response-quality.sop.md`: 33 KB (complete workflow)
-- `response-quality-SKILL.md`: 16 KB (optimized for skills)
 
 ---
 

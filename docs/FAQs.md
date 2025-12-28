@@ -29,3 +29,93 @@ Multiple teams independently discovered these patterns within a 12-month window 
 - Humans need **decision points**, not auto-pilot
 - AI needs **explicit permission** to proceed
 - Both need **shared understanding** of state
+
+---
+
+## What's the Difference Between SKILL.md and Everything Else?
+
+**AI Workflows Disambiguation**
+
+The AI ecosystem has converged on similar patterns with different names and formats. Here's how they relate:
+
+### The Universal Pattern
+
+All of these implement the same core idea: **structured specifications that guide AI behavior with human checkpoints**.
+
+### Format Comparison
+
+| Format | System | Purpose | Key Feature |
+|--------|--------|---------|-------------|
+| **SKILL.md** | Claude.ai Skills | Auto-triggered workflows for Claude | YAML frontmatter with `description` for triggering |
+| **POWER.md** | Kiro Powers | MCP tools + framework expertise | Keyword-based activation, bundles tools with guidance |
+| **.sop.md** | Platform-agnostic | Complete workflow documentation | Self-contained, human-readable, no frontmatter |
+| **Agent SOPs** | Strands Agents | Natural language workflows | MUST/SHOULD/MAY constraints, explicit phases |
+| **Spec files** | SDD tools (Kiro, spec-kit, Tessl) | Source-of-truth specifications | Living documents that generate code |
+
+### Key Similarities
+
+All formats share these characteristics:
+
+1. **Structured phases** - Break work into explicit steps
+2. **Constraints** - Use MUST/SHOULD/MAY or similar language
+3. **Human checkpoints** - Require explicit approval at decision points
+4. **Context triggering** - Activate based on user intent or keywords
+5. **Validation** - Built-in quality checks and tests
+
+### When to Use Each
+
+**Use SKILL.md when:**
+- Deploying to Claude.ai
+- Want auto-triggering based on conversation context
+- Need token efficiency (shares Claude's context window)
+
+**Use POWER.md when:**
+- Using Kiro or compatible systems
+- Bundling MCP tools with framework expertise
+- Want keyword-based dynamic loading
+
+**Use .sop.md when:**
+- Need platform-agnostic documentation
+- Want complete, self-contained workflows
+- Building reusable processes across teams
+- Creating source of truth for multiple formats
+
+**Use Agent SOPs when:**
+- Working with Strands Agents or similar frameworks
+- Need explicit natural language instructions
+- Want portable agent definitions
+
+**Use spec files (SDD) when:**
+- Building software with AI code generation
+- Want specification as source of truth
+- Using tools like Kiro, spec-kit, or Tessl
+
+### The Convergence
+
+These formats emerged independently but converged because they solve the same fundamental challenge: **managing LLM uncertainty through structure**.
+
+**Examples in the wild:**
+
+- **[Strands Agent SOPs](https://github.com/strands-agents/agent-sop)** - Natural language workflows with PDD
+- **[Kiro Powers](https://kiro.dev/blog/introducing-powers/)** - POWER.md files with MCP integration
+- **[GitHub spec-kit](https://github.com/github/spec-kit)** - Constitution-based specifications
+- **[HumanLayer](https://www.humanlayer.dev/)** - Context engineering with claude.md
+- **[Claude Skills](https://claude.ai)** - SKILL.md with YAML frontmatter
+
+### Interoperability
+
+These formats can be converted between each other:
+
+```
+.sop.md (source of truth)
+    ↓
+    ├── SKILL.md (for Claude.ai)
+    ├── POWER.md (for Kiro)
+    ├── Agent SOP (for Strands)
+    ├── Spec file (for SDD tools)
+    └── Documentation (for humans)
+```
+
+**See also:**
+- [SKILL-vs-SOP-FORMAT-COMPARISON.md](SKILL-vs-SOP-FORMAT-COMPARISON.md) for detailed format differences
+- [REFERENCES.md](REFERENCES.md) for full citations and links to all systems
