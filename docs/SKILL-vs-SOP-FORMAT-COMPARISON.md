@@ -13,6 +13,120 @@ Both contain the same core pattern but optimized for different use cases.
 
 ---
 
+## Complete Format Specifications
+
+### SKILL.md Format (Anthropic/Claude Code)
+
+**Official definition:** "Skills are model-invoked capabilities that Claude autonomously uses based on task context. Skills provide contextual guidance that Claude incorporates into its responses."
+
+**File extension:** `.md` (inside `skills/skill-name/` directory)
+
+**Required structure:**
+```markdown
+---
+name: skill-name
+description: This skill should be used when the user asks to "trigger phrase 1", "trigger phrase 2"...
+version: 1.0.0
+---
+
+# Skill body in imperative/infinitive form
+```
+
+**Progressive disclosure architecture (3 levels):**
+
+1. **Level 1: Metadata** (always in context)
+   - Skill name + description (~100 words)
+   - Loaded for ALL available skills
+   - Claude uses this to decide whether to invoke
+
+2. **Level 2: SKILL.md body** (loaded when triggered)
+   - Core instructions and guidance
+   - Recommended: 1,500-2,000 words
+   - Maximum: <5,000 words
+   - Loaded when Claude or user invokes skill
+
+3. **Level 3: Bundled resources** (loaded as needed)
+   - `references/` - Detailed docs, patterns, API refs (2,000-5,000+ words each)
+   - `examples/` - Working code examples
+   - `scripts/` - Utility scripts (can execute without loading to context)
+   - Claude loads these only when needed
+
+**Writing style:** Imperative/infinitive form (not second person)
+- ✅ "To create a workflow, define the parameters."
+- ❌ "You should create a workflow by defining parameters."
+
+**Frontmatter fields:**
+- `name` (required): Skill identifier
+- `description` (required): Third-person with trigger phrases - "This skill should be used when..."
+- `version` (optional): Semantic version
+
+**Directory structure:**
+```
+skills/skill-name/
+├── SKILL.md (required)
+├── references/     (optional - detailed docs)
+│   └── patterns.md
+├── examples/       (optional - working code)
+│   └── example.sh
+└── scripts/        (optional - utilities)
+    └── validate.sh
+```
+
+---
+
+### .sop.md Format (Strands Agent SOPs)
+
+**Official definition:** "Markdown files providing structured guidance for agents executing repeatable workflows."
+
+**File extension:** `.sop.md` with descriptive kebab-case naming
+
+**No frontmatter** - Pure markdown with standardized sections
+
+**Required sections:**
+1. **Title and Overview** - Clear heading with purpose and use cases
+2. **Parameters** - Listed with required/optional status, snake_case naming
+3. **Steps** - Numbered sections with natural language descriptions
+4. **Examples** (Recommended) - Input/output demonstrations
+5. **Troubleshooting** (Optional) - Common issues with resolutions
+
+**RFC 2119 Keywords System:**
+- **MUST/REQUIRED** - Absolute requirements
+- **MUST NOT/SHALL NOT** - Absolute prohibitions
+- **SHOULD/RECOMMENDED** - Strong recommendations (exceptions allowed)
+- **SHOULD NOT** - Discouraged but potentially valid
+- **MAY/OPTIONAL** - Truly optional elements
+
+**Critical rule:** "When using negative constraints (MUST NOT, SHOULD NOT, SHALL NOT), you MUST provide context explaining why the restriction exists."
+
+**Parameter format:**
+```markdown
+## Parameters
+
+- **parameter_name** (required): Description
+- **optional_param** (optional, default: "value"): Description
+```
+
+**Parameter naming:**
+- Lowercase letters only
+- Snake_case for word separation
+- Descriptive and clear terminology
+
+**Writing style:** Natural language with explicit constraints
+- Focus on clarity and specificity
+- Include rationale with "because" for prohibitions
+- Spell out exact processes
+
+**Design principles:**
+1. Natural Language First
+2. Standardized Structure
+3. Parameterized inputs
+4. Constraint-Based clarity
+5. Interactive capability
+
+**No progressive disclosure** - All content in single file
+
+---
+
 ## Key Differences
 
 ### 1. Format & Structure
@@ -58,8 +172,12 @@ Description and when to use
 | **Conciseness** | Extremely concise - "context window is public good" | More complete - can be verbose where needed |
 | **Assumptions** | Assumes Claude is already smart | Assumes reader may be learning |
 | **Style** | Example-driven over explanations | Includes rationale and principles |
+| **Writing voice** | Imperative/infinitive ("To do X, perform Y") | Natural language with explicit constraints |
+| **Constraints** | Implicit in instructions | Explicit RFC 2119 keywords (MUST, SHOULD, MAY) |
 | **Optimization** | Token efficiency (shares context with everything) | Reusability across contexts |
 | **Audience** | Claude (with human oversight) | Both humans and AI systems |
+| **Parameters** | Not formalized (handled in description/body) | Explicit Parameters section with required/optional |
+| **Progressive disclosure** | 3-level system (metadata → body → resources) | Single file with all content |
 
 ---
 
@@ -173,6 +291,183 @@ want to ensure your answer actually addresses what was asked.
 
 ---
 
+## Constraint Systems Comparison
+
+### SKILL.md: Implicit Constraints
+
+Skills embed constraints in imperative instructions without formal keywords:
+
+```markdown
+## Validation Process
+
+Start by reading the configuration file.
+Validate the input before processing.
+Use the grep tool to search for patterns.
+Create only the directories you actually need.
+```
+
+**Characteristics:**
+- Natural flow of instructions
+- Assumes Claude understands imperatives as requirements
+- Concise, action-oriented
+- No formal distinction between MUST vs SHOULD
+
+### .sop.md: Explicit RFC 2119 Keywords
+
+SOPs use standardized constraint keywords with specific meanings:
+
+```markdown
+## Step 3: Validation
+
+**Constraints:**
+- You MUST validate the input before processing
+- You MUST NOT proceed if validation score < 3/5 because this indicates incomplete requirements
+- You SHOULD use the grep tool to search for patterns when files are large
+- You MAY skip validation if the input source is trusted
+```
+
+**Characteristics:**
+- Formal constraint levels (absolute vs recommended vs optional)
+- **Negative constraints MUST include "because" rationale**
+- Clear distinction between requirements and recommendations
+- More verbose but eliminates ambiguity
+
+### The "Negative Constraints Rule"
+
+**From Strands specification:** "When using negative constraints (MUST NOT, SHOULD NOT, SHALL NOT), you MUST provide context explaining why the restriction exists."
+
+**Rationale types include:**
+- Technical limitations
+- Security risks
+- Data integrity concerns
+- User experience issues
+- Compatibility problems
+- Performance impacts
+- Workflow disruption
+
+**Example from .sop.md:**
+```markdown
+- You MUST NOT ask multiple questions at once because this overwhelms users and leads to incomplete responses
+- You MUST NOT skip the validation step because proceeding with invalid input corrupts downstream processes
+```
+
+**SKILL.md equivalent (implicit):**
+```markdown
+Ask ONE question at a time.
+Validate input before proceeding to next step.
+```
+
+### When Each Approach Fits
+
+**Use SKILL.md implicit constraints when:**
+- Working with Claude (understands imperative form)
+- Context window is limited
+- Workflow is straightforward
+- Target audience is AI agent
+
+**Use .sop.md explicit keywords when:**
+- Building platform-agnostic SOPs
+- Multiple AI systems will use it
+- Human readers need clarity
+- Formal compliance required
+- Complex workflows with many edge cases
+
+---
+
+## Progressive Disclosure Deep Dive
+
+### SKILL.md's 3-Level Architecture
+
+**Why progressive disclosure matters:**
+- Context window is shared resource
+- Not all skills needed for every conversation
+- Detailed content should load only when relevant
+
+**Level 1: Always loaded (metadata only)**
+```yaml
+name: database-schema
+description: This skill should be used when the user discusses database structure, table relationships, queries, or schema design.
+```
+- ~100 words per skill
+- ALL skills' metadata always in context
+- Claude uses descriptions to decide invocation
+
+**Level 2: Loaded when skill triggers (SKILL.md body)**
+```markdown
+# Database Schema Guidance
+
+## Core Concepts
+[1,500-2,000 word overview of schema design]
+
+## Common Patterns
+[Brief patterns reference]
+
+See `references/detailed-patterns.md` for comprehensive guide.
+```
+- Recommended: 1,500-2,000 words
+- Maximum: <5,000 words
+- Loaded when Claude or user invokes skill
+
+**Level 3: Loaded as needed (bundled resources)**
+```
+skills/database-schema/
+├── SKILL.md (1,800 words)
+├── references/
+│   ├── detailed-patterns.md (4,500 words)
+│   ├── normalization.md (3,200 words)
+│   └── indexing.md (2,800 words)
+├── examples/
+│   ├── e-commerce-schema.sql
+│   └── multi-tenant-schema.sql
+└── scripts/
+    └── validate-schema.sh
+```
+- References: 2,000-5,000+ words each (unlimited total)
+- Examples: Complete, runnable code
+- Scripts: Can execute without loading to context
+- Claude loads only when it determines need
+
+**Token efficiency example:**
+- Without progressive disclosure: 15,000 words loaded when skill triggers
+- With progressive disclosure: 1,800 words + selective reference loading
+- Savings: ~13,000 tokens (87%) when references not needed
+
+### .sop.md's Single-File Approach
+
+**All content in one file:**
+```markdown
+# Database Schema Design SOP
+
+## Overview
+[Complete explanation]
+
+## Parameters
+[All parameters defined]
+
+## Steps
+### Step 1: Requirements Analysis
+[Detailed process with constraints]
+
+### Step 2: Schema Design
+[Detailed process with constraints]
+
+[... all steps ...]
+
+## Examples
+[Multiple detailed scenarios]
+
+## Troubleshooting
+[Comprehensive guide]
+```
+
+**Characteristics:**
+- Self-contained (no external dependencies)
+- Easier to share and version control
+- No selective loading (all or nothing)
+- Better for human readers (complete context)
+
+---
+
 ## Which Format to Use When
 
 ### Use SKILL.md when:
@@ -219,14 +514,22 @@ want to ensure your answer actually addresses what was asked.
 
 | Element | .sop.md | SKILL.md |
 |---------|---------|----------|
-| **Frontmatter** | None | YAML required |
+| **File structure** | Single .sop.md file | Directory with SKILL.md + resources |
+| **Frontmatter** | None (uses .sop.md extension) | YAML required (name, description, version) |
+| **Writing style** | Natural language with "You MUST/SHOULD" | Imperative/infinitive form |
+| **Constraint keywords** | Explicit RFC 2119 (MUST, SHOULD, MAY) | Implicit in imperative instructions |
+| **Negative constraints** | MUST include "because" rationale | Brief justification if space allows |
+| **Parameters** | Formal Parameters section (snake_case) | Informal (described in body or examples) |
+| **Progressive disclosure** | None (all content in one file) | 3-level system (metadata → body → resources) |
+| **Content size** | Unlimited single file | SKILL.md: 1,500-2,000 words + unlimited refs |
 | **Rationale** | Extensive ("because" explanations) | Minimal (only if critical) |
-| **Examples** | Multiple detailed scenarios | Brief reference examples |
+| **Examples** | Multiple detailed scenarios | Brief reference examples (or in examples/) |
 | **Anti-patterns** | Explicitly documented with reasoning | Listed concisely if space allows |
-| **Constraints** | Full MUST/MUST NOT with justification | Condensed list of key constraints |
 | **Checkpoints** | Full templates with all options | Simplified decision points |
-| **Troubleshooting** | Comprehensive guide | Quick reference only |
+| **Troubleshooting** | Comprehensive guide | Quick reference only (or in references/) |
 | **Meta-content** | Principles, philosophy, "why" | Just the "what" and "how" |
+| **Bundled resources** | N/A (all in one file) | references/, examples/, scripts/ directories |
+| **Triggering** | Not specified by format | Third-person description with trigger phrases |
 
 ---
 
@@ -504,5 +807,61 @@ python convert-sop-to-agent.py response-quality.sop.md
 - Both formats have value
 
 ---
+
+## Sources and References
+
+This comprehensive comparison synthesizes official specifications from both format creators:
+
+### SKILL.md Format (Anthropic/Claude Code)
+
+**Official Documentation:**
+- **skill-development/SKILL.md** - Complete skill development guide from Anthropic's official plugin-dev toolkit
+  - Progressive disclosure architecture (3-level system)
+  - Writing style requirements (imperative/infinitive form)
+  - Bundled resources structure (references/, examples/, scripts/)
+  - Content size recommendations (1,500-2,000 words for SKILL.md body)
+  - Source: `~/.claude/plugins/.../plugin-dev/skills/skill-development/SKILL.md`
+
+- **example-skill/SKILL.md** - Official Anthropic skill template
+  - Official definition of skills
+  - Frontmatter requirements
+  - Structure examples
+  - Source: `~/.claude/plugins/.../example-plugin/skills/example-skill/SKILL.md`
+
+- **command-development/SKILL.md** - Slash command development guide
+  - Command vs skill distinctions
+  - YAML frontmatter fields
+  - Source: `~/.claude/plugins/.../plugin-dev/skills/command-development/SKILL.md`
+
+- **agent-development/SKILL.md** - Agent development guide
+  - Autonomous agent architecture
+  - System prompt design
+  - Source: `~/.claude/plugins/.../plugin-dev/skills/agent-development/SKILL.md`
+
+### .sop.md Format (Strands Agent SOPs)
+
+**Official Specifications:**
+- **agent-sop-format.md** - Format specification and rules
+  - Core structure requirements
+  - RFC 2119 keywords system
+  - Negative constraints rule
+  - Best practices
+  - Source: https://github.com/strands-agents/agent-sop/blob/main/rules/agent-sop-format.md
+
+- **agent-sops-specification.md** - Complete technical specification
+  - Parameter specification format
+  - Constraint system details
+  - Design principles
+  - Implementation compatibility
+  - Source: https://github.com/strands-agents/agent-sop/blob/main/spec/agent-sops-specification.md
+
+**Additional References:**
+- [Strands Agent SOPs Repository](https://github.com/strands-agents/agent-sop) - Open source repository
+- [AWS Blog: Introducing Strands Agent SOPs](https://aws.amazon.com/blogs/opensource/introducing-strands-agent-sops-natural-language-workflows-for-ai-agents/)
+- [RFC 2119: Key words for use in RFCs to Indicate Requirement Levels](https://www.rfc-editor.org/rfc/rfc2119.html)
+
+---
+
+**Last Updated:** 2025-12-28
 
 This comparison should help you understand when and how to use each format effectively!
