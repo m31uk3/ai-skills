@@ -122,47 +122,46 @@ A complete implementation of the meta-pattern, demonstrating how to analyze whet
 
 All successful AI workflows follow this structure:
 
-```
-┌─────────────────────────────────────────────────┐
-│  INTAKE/INVESTIGATION (Validate inputs)         │
-│  - Gather required context                      │
-│  - Validate completeness                        │
-│  - Establish constraints                        │
-└──────────────┬──────────────────────────────────┘
-               ↓
-┌─────────────────────────────────────────────────┐
-│  DECOMPOSITION/PLANNING (Structure the work)    │
-│  - Break into components/tasks                  │
-│  - Define success criteria                      │
-│  - Identify dependencies                        │
-└──────────────┬──────────────────────────────────┘
-               ↓
-┌─────────────────────────────────────────────────┐
-│  ITERATIVE EXECUTION (Do the work)              │
-│  ┌─────────────────────────────────────┐       │
-│  │ Execute step                        │       │
-│  │         ↓                            │       │
-│  │ Validate against constraints        │       │
-│  │         ↓                            │       │
-│  │ HUMAN CHECKPOINT ← ← ← ← ← ← ← ← ← │       │
-│  │         ↓                ↑           │       │
-│  │ Proceed or iterate? ─ ─ ┘           │       │
-│  └─────────────────────────────────────┘       │
-└──────────────┬──────────────────────────────────┘
-               ↓
-┌─────────────────────────────────────────────────┐
-│  VALIDATION/REVIEW (Check quality)              │
-│  - Run testable conditions                      │
-│  - Calculate coverage/completeness              │
-│  - Identify gaps                                │
-└──────────────┬──────────────────────────────────┘
-               ↓
-┌─────────────────────────────────────────────────┐
-│  DECISION POINT (Human chooses next action)     │
-│  - Present options                              │
-│  - Wait for explicit direction                  │
-│  - Support iteration back to any phase          │
-└─────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    A[INTAKE/INVESTIGATION<br/>Validate inputs]
+    A1["• Gather required context<br/>• Validate completeness<br/>• Establish constraints"]
+
+    B[DECOMPOSITION/PLANNING<br/>Structure the work]
+    B1["• Break into components/tasks<br/>• Define success criteria<br/>• Identify dependencies"]
+
+    C[ITERATIVE EXECUTION<br/>Do the work]
+    C1[Execute step]
+    C2[Validate against constraints]
+    C3[HUMAN CHECKPOINT]
+    C4{Proceed or iterate?}
+
+    D[VALIDATION/REVIEW<br/>Check quality]
+    D1["• Run testable conditions<br/>• Calculate coverage/completeness<br/>• Identify gaps"]
+
+    E[DECISION POINT<br/>Human chooses next action]
+    E1["• Present options<br/>• Wait for explicit direction<br/>• Support iteration back to any phase"]
+
+    A --> A1
+    A1 --> B
+    B --> B1
+    B1 --> C
+    C --> C1
+    C1 --> C2
+    C2 --> C3
+    C3 --> C4
+    C4 -->|Iterate| C1
+    C4 -->|Proceed| D
+    D --> D1
+    D1 --> E
+    E --> E1
+
+    style A fill:#e1f5ff,stroke:#0277bd,stroke-width:2px
+    style B fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    style C fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    style C3 fill:#ffebee,stroke:#c62828,stroke-width:3px
+    style D fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style E fill:#fce4ec,stroke:#c2185b,stroke-width:2px
 ```
 
 ## Why This Pattern Emerges
