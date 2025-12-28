@@ -131,3 +131,48 @@ Task/Workflow Level:
 **See also:**
 - [SKILL-vs-SOP-FORMAT-COMPARISON.md](SKILL-vs-SOP-FORMAT-COMPARISON.md) for detailed format differences
 - [REFERENCES.md](REFERENCES.md) for full citations and links to all systems
+- [slash-commands-vs-skills.md](slash-commands-vs-skills.md) for Claude Code-specific differences
+
+---
+
+## What's the Difference Between Slash Commands and Skills in Claude Code?
+
+**Quick Answer:** Skills are for Claude to invoke automatically. Slash commands are for you to invoke manually. But both can be called by either party today.
+
+### The Confusion
+
+Skills and slash commands work almost identically in Claude Code right now:
+
+- Both can be invoked by typing `/name`
+- Both can be invoked by Claude automatically
+- Both load instructions into conversation context
+
+This creates real confusion. Many developers ask "why have both?"
+
+### The Intent
+
+Anthropic designed them with different purposes:
+
+| Aspect | Skills | Slash Commands |
+|--------|--------|----------------|
+| **Who decides** | Claude (automatic) | You (manual) |
+| **Best for** | On-demand knowledge | Standardized workflows |
+| **Think of it as** | Library books Claude grabs | Buttons you press |
+| **Examples** | API docs, style guides | PR templates, test runners |
+
+### The Reality
+
+**Current state:** They overlap significantly. You can invoke skills manually. Claude can invoke slash commands.
+
+**Official position** (Anthropic): "We think this difference is significant enough to keep the two concepts separate... We are definitely looking to eliminate this [overlap]... The way they load instructions may diverge over time."
+
+### Decision Guide
+
+Ask yourself: **Who should decide when this runs?**
+
+- **Claude should decide** → Create a skill (e.g., load database schema docs when discussing databases)
+- **I should decide** → Create a slash command (e.g., generate PR description when I'm ready)
+
+Don't optimize for today's mechanics. Optimize for the intended use case.
+
+**Full analysis:** See [slash-commands-vs-skills.md](slash-commands-vs-skills.md) for decision matrix, context management patterns, and official Anthropic statements.
