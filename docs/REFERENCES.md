@@ -83,6 +83,39 @@ Datadog, Dynatrace, Figma, Neon, Netlify, Postman, Supabase, Stripe, Strands Age
 **Key Contribution:**
 Demonstrates the same pattern (structured specs with frontmatter triggering) applied to MCP tool management. POWER.md files are conceptually similar to SKILL.md but focused on tool bundling with expertise.
 
+### 5. AGENTS.md
+
+**Main Resources:**
+- **AGENTS.md Website:** https://agents.md/
+- **Strands Example:** https://github.com/strands-agents/agent-sop/blob/main/AGENTS.md
+- **Specification:** Open standard stewarded by Agentic AI Foundation (Linux Foundation)
+
+**What It Is:**
+AGENTS.md is an open-format Markdown file designed to guide AI coding agents through project workflows. It's like README.md but specifically for AI agents, providing technical guidance separate from human-oriented documentation.
+
+**Key Features:**
+- Standard Markdown with flexible headings (no required fields)
+- Hierarchical structure - supports nested files in monorepos
+- Works across multiple AI tools (Claude Code, GitHub Copilot, Cursor, VS Code, Jules)
+- Adopted by 60,000+ open source projects
+
+**Common Sections:**
+- Project overview
+- Directory structure
+- Build/test commands
+- Code style and conventions
+- Development patterns
+- Security considerations
+
+**Philosophy:**
+Separation of concerns - READMEs stay human-focused and concise, AGENTS.md handles agent-specific requirements like build sequences, testing workflows, and project-specific conventions.
+
+**Key Contribution:**
+Demonstrates project-level pattern convergence. While SKILL.md, POWER.md, and .sop.md focus on task-specific workflows, AGENTS.md applies the same structured markdown approach to entire codebase guidance. Shows the pattern scales from individual tasks to full projects.
+
+**Relevance:**
+Yet another independent system converged on structured markdown for guiding AI behavior. AGENTS.md uses file discovery instead of frontmatter triggering, but follows the same principles: explicit structure, human-readable documentation, and AI-consumable format.
+
 ## Related Concepts & Historical Context
 
 ### Model-Driven Development (MDD)
@@ -111,14 +144,14 @@ Design patterns that emerge independently when different people solve similar pr
 
 ## Key Principles Across All Systems
 
-| Principle | Strands/PDD | HumanLayer | SDD Tools | Kiro Powers | Our Meta-Pattern |
-|-----------|-------------|------------|-----------|-------------|------------------|
-| Explicit constraints | MUST/SHOULD/MAY | Context files | Constitution | Frontmatter keywords | RFC 2119 language |
-| Human checkpoints | Agent SOPs | Review gates | Spec validation | Tool approval | Decision points |
-| Structured phases | PDD workflow | 4-phase cycle | Multi-stage | Dynamic loading | 5-phase universal |
-| Artifacts as truth | SOP files | claude.md | Spec files | POWER.md | Checkpoint artifacts |
-| Iterative refinement | Iterative loops | Plan → Implement → Review | Small steps | Context-aware switching | Non-linear phases |
-| Validation gates | Testing | Context validation | Checklists | Keyword matching | Quality metrics |
+| Principle | Strands/PDD | HumanLayer | SDD Tools | Kiro Powers | AGENTS.md | Our Meta-Pattern |
+|-----------|-------------|------------|-----------|-------------|-----------|------------------|
+| Explicit constraints | MUST/SHOULD/MAY | Context files | Constitution | Frontmatter keywords | Convention sections | RFC 2119 language |
+| Human checkpoints | Agent SOPs | Review gates | Spec validation | Tool approval | Documentation review | Decision points |
+| Structured phases | PDD workflow | 4-phase cycle | Multi-stage | Dynamic loading | Build/test/deploy | 5-phase universal |
+| Artifacts as truth | SOP files | claude.md | Spec files | POWER.md | AGENTS.md | Checkpoint artifacts |
+| Iterative refinement | Iterative loops | Plan → Implement → Review | Small steps | Context-aware switching | Development workflow | Non-linear phases |
+| Validation gates | Testing | Context validation | Checklists | Keyword matching | Executable commands | Quality metrics |
 
 ## Timeline of Convergence
 

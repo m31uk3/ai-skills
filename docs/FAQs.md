@@ -51,6 +51,7 @@ All of these implement the same core idea: **structured specifications that guid
 | **.sop.md** | Platform-agnostic | Complete workflow documentation | Self-contained, human-readable, no frontmatter |
 | **Agent SOPs** | Strands Agents | Natural language workflows | MUST/SHOULD/MAY constraints, explicit phases |
 | **Spec files** | SDD tools (Kiro, spec-kit, Tessl) | Source-of-truth specifications | Living documents that generate code |
+| **AGENTS.md** | Project-level (cross-platform) | AI agent guidance for codebases | Standard Markdown, file discovery, 60k+ projects |
 
 ### Key Similarities
 
@@ -90,6 +91,12 @@ All formats share these characteristics:
 - Want specification as source of truth
 - Using tools like Kiro, spec-kit, or Tessl
 
+**Use AGENTS.md when:**
+- Providing project-level guidance to AI coding agents
+- Want cross-platform compatibility (works with Claude Code, Copilot, Cursor, etc.)
+- Need to document build/test workflows and code conventions
+- Want agent-specific context separate from human README
+
 ### The Convergence
 
 These formats emerged independently but converged because they solve the same fundamental challenge: **managing LLM uncertainty through structure**.
@@ -101,12 +108,17 @@ These formats emerged independently but converged because they solve the same fu
 - **[GitHub spec-kit](https://github.com/github/spec-kit)** - Constitution-based specifications
 - **[HumanLayer](https://www.humanlayer.dev/)** - Context engineering with claude.md
 - **[Claude Skills](https://claude.ai)** - SKILL.md with YAML frontmatter
+- **[AGENTS.md](https://agents.md/)** - Open standard for AI agent project guidance (60k+ projects)
 
 ### Interoperability
 
 These formats can be converted between each other:
 
 ```
+Project Level:
+AGENTS.md → Project-wide agent guidance
+
+Task/Workflow Level:
 .sop.md (source of truth)
     ↓
     ├── SKILL.md (for Claude.ai)
