@@ -145,7 +145,7 @@ Commands insert into conversation each time invoked. You control the timing.
 
 **Example:** Same command using 31k tokens (19%) vs 27k tokens (16%) depending on whether double-loading occurs.
 
-**Status:** Anthropic acknowledged this issue and landed a PR to improve the behavior (Dec 2024). Per Boris Cherny: "the model decides whether it needs to re-read the .md file or if it has the context it needs already."
+**Status:** Anthropic acknowledged this issue and [landed a PR to improve the behavior](https://x.com/bcherny/status/2003914387141370116) (Dec 2024). Per Boris Cherny: "the model decides whether it needs to re-read the .md file or if it has the context it needs already."
 
 **Workaround:** Use `disable-model-invocation: true` in slash command frontmatter to prevent model from auto-invoking after manual invocation.
 
@@ -376,7 +376,7 @@ On how context loading works:
 > 2. When you invoke /skill or /command manually, the entire content of the .md file is pulled into context. This is an explicit signal that you want to add something to context.
 > 3. When you ask the model to invoke a skill or command, the model decides whether it needs to re-read the .md file or if it has the context it needs already."
 
-On double-loading issue:
+On double-loading issue ([source](https://x.com/bcherny/status/2003914387141370116)):
 
 > "Just landed a PR to improve this behavior a bit, going out with the next release."
 
