@@ -39,7 +39,7 @@ This is a codification of the **universal pattern for building reliable AI workf
 
 These systems, built by different teams solving different problems, converged on the **same meta-architecture**. This repository captures that pattern.
 
-📚 **[Full references and links →](REFERENCES.md)**
+📚 **[Full references and links →](docs/REFERENCES.md)**
 
 ## The Core Insight
 
@@ -166,7 +166,7 @@ flowchart TD
 
 ## Why This Pattern Emerges
 
-**📖 [See detailed explanation in FAQs.md](FAQs.md#why-this-pattern-emerges)**
+**📖 [See detailed explanation in FAQs.md](docs/FAQs.md#why-this-pattern-emerges)**
 
 Multiple teams independently discovered these patterns within a 12-month window (2024-2025) because they address fundamental challenges in managing LLM uncertainty: probabilistic outputs, complex task decomposition, limited context, and human-AI collaboration.
 
@@ -348,7 +348,7 @@ This pattern represents the convergence of multiple independent discoveries. As 
 
 ## References
 
-For detailed citations, URLs, and resources about all systems that converged on this pattern, see **[REFERENCES.md](REFERENCES.md)**.
+For detailed citations, URLs, and resources about all systems that converged on this pattern, see **[REFERENCES.md](docs/REFERENCES.md)**.
 
 Key resources:
 - [Strands Agent SOPs](https://github.com/strands-agents/agent-sop) - PDD and natural language workflows
@@ -370,7 +370,7 @@ This pattern emerged through independent discoveries by:
 
 **The pattern is bigger than any single implementation.**
 
-See [REFERENCES.md](REFERENCES.md) for full citations and resources.
+See [REFERENCES.md](docs/REFERENCES.md) for full citations and resources.
 
 ---
 
