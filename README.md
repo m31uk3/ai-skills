@@ -1,4 +1,4 @@
-# AI Workflow Engineering: The Universal Pattern
+# AI Skills: The Universal Pattern
 
 [![Skills](https://img.shields.io/badge/skills-2-blue.svg)](skills/)
 [![License](https://img.shields.io/badge/license-Public%20Domain-green.svg)](#license)
