@@ -53,6 +53,193 @@ skills/skill-name/
 
 ---
 
+## Skills Within the Plugin Ecosystem
+
+### What is a Claude Code Plugin?
+
+Skills cannot exist standalone - they **must be packaged within a plugin**. A plugin is a distribution package that bundles multiple Claude Code capabilities:
+
+**Plugin Components** (all optional except `.claude-plugin/`):
+```
+plugin-name/
+├── .claude-plugin/
+│   └── plugin.json           # Plugin manifest (REQUIRED)
+├── commands/                  # Slash commands
+│   └── *.md
+├── agents/                    # Custom subagents
+│   └── *.md
+├── skills/                    # Agent skills ← THIS IS WHERE SKILLS LIVE
+│   └── skill-name/
+│       ├── SKILL.md          # Required for each skill
+│       ├── references/       # Optional: detailed docs
+│       ├── examples/         # Optional: code samples
+│       └── scripts/          # Optional: executables
+├── hooks/                     # Event handlers
+│   ├── hooks.json
+│   └── scripts/
+└── scripts/                   # Shared plugin utilities
+```
+
+**Key Insight:** Skills are **one component type** within a plugin, alongside commands, agents, hooks, and MCP servers.
+
+### Minimum Plugin for Skills
+
+To distribute skills, you need at minimum:
+
+```
+my-plugin/
+├── .claude-plugin/
+│   └── plugin.json          # Minimum: {"name": "my-plugin"}
+└── skills/
+    └── my-skill/
+        └── SKILL.md
+```
+
+**plugin.json (minimal):**
+```json
+{
+  "name": "my-plugin"
+}
+```
+
+**plugin.json (recommended for distribution):**
+```json
+{
+  "name": "my-plugin",
+  "version": "1.0.0",
+  "description": "My custom skills collection",
+  "author": {
+    "name": "Your Name",
+    "email": "you@example.com"
+  },
+  "repository": "https://github.com/user/my-plugin",
+  "license": "MIT",
+  "keywords": ["skills", "documentation"]
+}
+```
+
+### Plugin Installation
+
+**Three ways to install plugins:**
+
+1. **Public Registry** (easiest):
+   ```bash
+   claude
+   > /plugin install plugin-name
+   ```
+   - Installs from https://claude-plugins.dev/
+   - Plugin saved to `~/.claude/plugins/plugin-name/`
+   - All skills auto-discovered
+
+2. **Local Development** (for testing):
+   ```
+   project/.claude/plugins/my-plugin/
+   ├── .claude-plugin/plugin.json
+   └── skills/my-skill/SKILL.md
+   ```
+   - Create plugin directory structure
+   - Restart Claude Code
+   - Plugin auto-discovered (project-level only)
+
+3. **Git Clone** (for shared plugins):
+   ```bash
+   cd ~/.claude/plugins
+   git clone https://github.com/user/plugin-name
+   # Restart Claude Code
+   ```
+   - Plugin auto-discovered (user-level, all projects)
+
+### User-Level vs Project-Level Plugins
+
+**User-level plugins:**
+- Location: `~/.claude/plugins/`
+- Availability: All projects
+- Use for: Personal tools, general documentation, reusable skills
+
+**Project-level plugins:**
+- Location: `<project>/.claude/plugins/`
+- Availability: This project only
+- Use for: Project-specific knowledge, team conventions
+
+**Skills are discovered from both locations:**
+```
+~/.claude/plugins/*/skills/*/SKILL.md        # User-level
+<project>/.claude/plugins/*/skills/*/SKILL.md # Project-level
+```
+
+### How Plugin Components Work Together
+
+**Example: `code-quality` Plugin**
+
+```
+code-quality/
+├── .claude-plugin/plugin.json
+├── commands/
+│   └── lint.md              # /lint command
+├── agents/
+│   └── code-reviewer.md     # Uses code-standards skill
+└── skills/
+    └── code-standards/      # Auto-loads when reviewing code
+        ├── SKILL.md
+        └── references/
+            └── style-guide.md
+```
+
+**Interaction flow:**
+
+1. **User asks: "Review this code"**
+   - Claude selects `code-reviewer` agent
+   - Agent spec states: "Automatically loads `code-standards` skill"
+   - Skill loads with coding standards
+   - Agent uses skill knowledge for review
+
+2. **User runs: `/lint`**
+   - Command markdown loads
+   - Command can reference: "Use code-standards skill for validation"
+   - Skill loads if not already in context
+   - Linting proceeds with skill guidance
+
+3. **Claude needs style info**
+   - User mentions "follow style guide"
+   - `code-standards` skill description matches
+   - Claude auto-invokes skill
+   - SKILL.md body loads (Level 2)
+   - If details needed: references/style-guide.md loads (Level 3)
+
+**Key insight:** Skills provide **knowledge** that all other plugin components can reference and use.
+
+### Skills vs Other Plugin Components
+
+| Component | Purpose | Invocation | Content | Context Impact |
+|-----------|---------|------------|---------|----------------|
+| **Skills** | Static knowledge/docs | Auto (Claude) or manual | SKILL.md + resources | Progressive (3-tier) |
+| **Commands** | User workflows | Manual (`/cmd`) | Single .md | Full on-demand |
+| **Agents** | Complex multi-step tasks | Auto (Claude) or manual | Agent .md | Isolated context |
+| **Hooks** | Event handlers | Auto (on events) | .json + scripts | Script output only |
+| **MCP Servers** | External tools/APIs | Auto (Claude) | External protocol | API response only |
+
+**Skills Unique Advantage:** Progressive disclosure keeps irrelevant knowledge out of context.
+
+### Why Skills Don't Need MCP
+
+**MCP is a separate plugin component**, not required for skills:
+
+- **Skills**: Local markdown files (skills/ directory)
+- **MCP**: External tool integration (`.mcp.json` config)
+
+**You can have:**
+- Plugin with skills only (no MCP)
+- Plugin with MCP only (no skills)
+- Plugin with both (independent features)
+
+**Skills work purely locally:**
+- No server process
+- No network calls
+- No external dependencies
+- Just filesystem reads
+
+---
+
 ## Progressive Disclosure Mechanism
 
 ### Three-Tier Loading System
