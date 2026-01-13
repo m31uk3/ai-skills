@@ -914,7 +914,7 @@ Founders look for builders. Consumers aren't in the hiring pool unless they have
 ## Source Validation
 
 **Primary Sources**:
-1. Technical vlog transcript "fundamental skills and knowledge you must have in 2026 for SWE" ([Jr2auYrBDA4](https://github.com/m31uk3/ai-skills/blob/main/docs/swe-baseline-skills-2026--curated-context.md)), recorded January 13, 2026
+1. Technical vlog transcript "fundamental skills and knowledge you must have in 2026 for SWE" ([Jr2auYrBDA4](https://www.youtube.com/watch?v=Jr2auYrBDA4)), recorded January 13, 2026
 2. Workshop codebase: [`github.com/ghuntley/how-to-build-a-coding-agent`](https://github.com/ghuntley/how-to-build-a-coding-agent)
 3. Ralph Wiggum curated context documents (organizational pattern reference)
 
