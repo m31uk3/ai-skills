@@ -7,9 +7,9 @@ A curated context document that teaches the five baseline technical skills softw
 **Target audience**: Junior to mid-level software engineers who need practical experience building AI agents.
 
 **Workshop repository**: [`github.com/ghuntley/how-to-build-a-coding-agent`](https://github.com/ghuntley/how-to-build-a-coding-agent)
+**Learning Path**: [`github.com/m31uk3/ai-skills/blob/main/docs/swe-baseline-skills-2026`](https://github.com/m31uk3/ai-skills/blob/main/docs/swe-baseline-skills-2026--curated-context.md)
 
 ---
-
 ## Major Changes from Original Version
 
 ### 1. **Skills-First Structure**
@@ -21,7 +21,6 @@ The document is now organized around **actionable skill development** rather tha
 - **Section C**: Advanced Concepts & Patterns - For deeper understanding
 - **Section D**: Interview Preparation - Practical exercises and talking points
 - **FAQs**: Industry context and career implications (moved out of main flow)
-
 ### 2. **Direct Code Examples Throughout**
 
 Every concept now has **real, runnable code** from the workshop:
@@ -104,68 +103,6 @@ Added dedicated section with:
 - Build custom tools (database query, API caller, code formatter)
 - Build Ralph loops for real tasks
 - Write blog posts explaining what you learned
-
----
-
-## Document Structure
-
-### Section A: Core Technical Skills
-
-Five baseline skills with code examples:
-
-1. **Inferencing Loop** - Request-response cycle, message arrays, stateless servers
-2. **Tool Calling System** - Tool registration, execution, result handling
-3. **Four Tool Primitives** - Read, List, Bash, Edit (with full implementations)
-4. **Context Windows & Memory** - Stateless servers, context rot, mitigation strategies
-5. **Agent Construction** - Shell loops, task picking, Ralph pattern
-
-### Section B: Skill Development Path
-
-Progressive workshop phases:
-- Phase 1: Basic Chat (0 tools)
-- Phase 2: File Reader (1 tool)
-- Phase 3: File Explorer (2 tools)
-- Phase 4: Command Runner (3 tools)
-- Phase 5: File Editor (4 tools) ← **You have a full coding agent here**
-- Phase 6: Code Search (5 tools - optional)
-
-Each phase includes:
-- Goal and file to run
-- What changes from previous phase
-- Commands to try
-- What to observe
-- Key insights
-
-### Section C: Advanced Concepts
-
-Deep dives into:
-- Message array structure
-- Schema generation patterns
-- Error handling strategies
-- Verbose logging techniques
-- Building Ralph loops
-
-### Section D: Interview Preparation
-
-- Whiteboard exercises
-- Coding exercises
-- Conceptual questions
-- Practice exercises (with time estimates)
-- Portfolio project ideas
-- Interview talking points
-
-### FAQs: Industry Context
-
-Answers to:
-- What changed in 2026?
-- Why does this matter now?
-- What's the Z80 story?
-- Timeline and cohort discussion
-- Corporate transformation lag
-- Experience vs. skill gap
-- Consumer vs. builder divide
-- What should I do next?
-
 ## How to Use This Document
 
 ### For Learning (Beginner)
@@ -229,9 +166,10 @@ After completing this document and workshop, you should be able to:
 
 ### Primary Sources
 
-1. **Technical vlog**: "fundamental skills and knowledge you must have in 2026 for SWE" (Jr2auYrBDA4), January 13, 2026
+1. **YouTube Vlog**: "fundamental skills and knowledge you must have in 2026 for SWE" ([Jr2auYrBDA4](https://youtu.be/Jr2auYrBDA4)), January 13, 2026
 2. **Workshop codebase**: [`github.com/ghuntley/how-to-build-a-coding-agent`](https://github.com/ghuntley/how-to-build-a-coding-agent) (5.5k+ stars)
-3. **Ralph Wiggum docs**: Curated context and synthesized versions for organizational patterns
+3. **Learning Path**: [`github.com/m31uk3/ai-skills/blob/main/docs/swe-baseline-skills-2026`](https://github.com/m31uk3/ai-skills/blob/main/docs/swe-baseline-skills-2026--curated-context.md)
+4. **Ralph Wiggum docs**: Curated context and synthesized versions for organizational patterns
 
 ### Synthesis Approach
 
@@ -251,9 +189,9 @@ After completing this document and workshop, you should be able to:
 
 ## Related Documents
 
-- **Main document**: `swe-baseline-skills-2026--curated-context.md` - The full curated context with all details
-- **Ralph Wiggum**: `ralph-wiggum--curated-context.md` - Deep dive into autonomous AI coding loops
-- **Ralph Wiggum v2**: `ralph-wiggum--synthesized-v2.md` - Implementation guide for Ralph loops
+- **Main document**: [`swe-baseline-skills-2026--curated-context.md`](https://github.com/m31uk3/ai-skills/blob/main/docs/swe-baseline-skills-2026--curated-context.md) - The full curated context with all details
+- **Ralph Wiggum**: [`ralph-wiggum--curated-context.md`](https://github.com/m31uk3/ai-skills/blob/main/docs/ralph-wiggum--curated-context.md) - Deep dive into autonomous AI coding loops
+- **Ralph Wiggum v2**: [`ralph-wiggum--synthesized-v2.md`](https://github.com/m31uk3/ai-skills/blob/main/docs/ralph-wiggum--synthesized-v2.md) - Implementation guide for Ralph loops
 
 ---
 
