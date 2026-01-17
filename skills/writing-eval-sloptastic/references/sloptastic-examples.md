@@ -171,29 +171,223 @@ Human writers create messy first drafts, then refine. AI generates pre-polished 
 
 ---
 
-## Example 2: Low Slop Score Template
+## Example 2: "Gaming Laptop for Excel" (Score: 15.1/100)
+
+### The Original Text
+
+> Friday Stupid Story Time (because if I see one more "your first hire should be an AI agent" post, im going to assume no one has any original thoughts anymore).
+>
+> I'm not a gamer. Never have been. Never will be. Yet I own a fully loaded gaming laptop.
+>
+> At Amazon, I was basically IT's favorite guest star. No waiting in line, just straight to "What did you do to it THIS time, Bri?" For context, one team supported 13 floors of humans...
+>
+> I once murdered two laptops in a single week (record set). I'm pretty sure there might have been a framed photo of me in the IT break room labeled "Employee of the Month: don't let her touch anything." I exasperated them to the point they beefed up my laptop AND gave me a desktop computer.
+>
+> Why? Because my true passion project is crafting unholy, 50+ tab Excel monstrosities and then running 15 of those at the same time. Pretty sure Microsoft considered charging for Excel usage based on my profile.
+>
+> So, when it came time to buy my own machine, it needed to be "Bri-proof." Enter: the RGB-lit gaming monster. It handles my Excel chaos, the keyboard feels like butter (critical life metric), and bonus - the pretty colors make me feel vaguely cool.
+>
+> Moral of the story:
+> The best tool for the job isn't always the one marketed for professionals.
+> Sometimes it's the one with dragon decals and enough RAM to power a small nation.
+>
+> What about you? What's the most overkill "work" setup you've ever justified?
+
+### Analysis
+
+#### 1. Structural Formulaicity (15% AI Pattern Match)
+
+##### A. Parallel Construction Density
+- **Count:** 1 explicit parallel structure in ~230 words
+  - "Never have been. Never will be."
+- **Density calculation:** 1 / 230 words = **0.4%**
+
+**AI Tell Threshold:** >3% indicates robotic parallelism
+
+**Assessment:** Well below threshold. The single parallel serves emphatic function and is immediately broken by the contrasting "Yet I own..."
+
+##### B. Connector Disease
+- **Count:** 2 logical connectors (0.9% density)
+  - "Why? Because..." (rhetorical question setup)
+  - "So, when it came time..." (natural transition)
+
+**AI Tell Threshold:** >1.5% indicates simulated coherence
+
+**Assessment:** Below threshold. Connectors feel conversational, not mechanical.
+
+##### C. Definitional Tautology
+- **Count:** 0 instances
+
+No "X isn't just Y, it's Z" patterns. No strawman correction habits.
+
+---
+
+#### 2. Lexical Vapor (12% Abstraction Density)
+
+##### A. Concrete-to-Abstract Ratio
+| Concrete Nouns (24) | Abstract Nouns (5) | Ratio |
+|---------------------|--------------------| ------|
+| laptop (×3), Amazon, IT, line, floors, humans, team, week, photo, break room, desktop computer, tab, Excel (×2), machine, gaming monster, keyboard, butter, colors, dragon decals, RAM, nation, setup | passion project, monstrosities, chaos, metric, moral | **4.8:1** |
+
+**AI Tell Threshold:** Ratio <1:2 indicates abstraction overuse
+
+**Assessment:** **Inverse of AI pattern.** Text is heavily grounded in concrete specifics.
+
+##### B. Specificity Markers
+| Specific Detail | Type |
+|-----------------|------|
+| "13 floors of humans" | Numerical precision |
+| "two laptops in a single week" | Quantified anecdote |
+| "50+ tab Excel monstrosities" | Technical specificity |
+| "running 15 of those at the same time" | Behavioral detail |
+| "RGB-lit gaming monster" | Product description |
+| "dragon decals" | Visual detail |
+
+**Assessment:** Six specific, verifiable details. The opposite of AI vapor.
+
+---
+
+#### 3. Rhetorical Overengineering (10% Artificial Persuasion)
+
+##### A. Chiasmus Abuse
+- **Count:** 0 instances
+
+No X→Y, Y→X reversal patterns detected.
+
+##### B. Abstraction Laddering
+- **Count:** 0 instances
+
+Text consistently returns to ground-level specifics. Even the "moral" immediately grounds itself with "dragon decals and enough RAM."
+
+##### C. Literary Devices Present (Natural Use)
+| Device | Instance | Assessment |
+|--------|----------|------------|
+| Hyperbole | "murdered two laptops," "power a small nation" | Natural humor |
+| Self-deprecation | "What did you do to it THIS time, Bri?" | Authenticity marker |
+| Parenthetical asides | "(record set)", "(critical life metric)" | Human messiness |
+
+**Assessment:** Devices serve humor and personality rather than masking logical gaps.
+
+---
+
+#### 4. Tonal Uncanniness (8% Earnestness Saturation)
+
+##### A. Hedging Presence (Anti-AI Signal)
+| Marker | Instance |
+|--------|----------|
+| "basically" | "I was basically IT's favorite guest star" |
+| "pretty sure" | "I'm pretty sure there might have been" |
+| "Pretty sure" | "Pretty sure Microsoft considered" |
+| "vaguely" | "make me feel vaguely cool" |
+
+**Count:** 4 hedging markers
+
+**AI Tell:** Zero hedging = AI pattern
+
+**Assessment:** **Strong anti-AI signal.** The double-hedge "pretty sure there might have been" is particularly human.
+
+##### B. Human Messiness Markers
+| Marker | Instance |
+|--------|----------|
+| Sentence fragment | "Never have been. Never will be." |
+| Informal punctuation | "(record set)" |
+| Casual tone shifts | "im going to assume" (lowercase "im") |
+| Self-interruption | "(because if I see one more...)" |
+| Conversational aside | "(critical life metric)" |
+
+**Assessment:** Natural messiness throughout. This reads as human first-draft energy that knows it's a first draft.
+
+---
+
+#### 5. Logical Void (18% Circular Reasoning)
+
+##### A. Tautology Count
+- **Count:** 0 circular definitions
+
+##### B. Evidence-Free Universalism
+- **Count:** 1 soft universal claim
+  - "The best tool for the job isn't always the one marketed for professionals"
+
+**Assessment:** Qualified ("isn't always") and immediately supported by the preceding anecdote. Not a pure logical void.
+
+##### C. Confidence-Specificity Ratio
+- Highest confidence appears in specific, verifiable claims:
+  - "I once murdered two laptops in a single week" (confident, specific)
+  - "50+ tab Excel monstrosities" (confident, specific)
+
+**AI Tell:** Highest confidence in abstract claims = AI pattern
+
+**Assessment:** **Inverse of AI pattern.** Confidence tracks with specificity.
+
+---
+
+#### 6. Platitude Density (22%)
+
+##### A. Meaningful-Nothing Phrases
+| Phrase | Assessment |
+|--------|------------|
+| "The best tool for the job isn't always the one marketed for professionals" | Generic wisdom, but qualified |
+| "passion project" | Mild buzzword |
+
+##### B. Platitude Frequency
+- **Calculation:** 2 platitudes / 16 sentences = **1 platitude per 8 sentences**
+
+**AI Tell Threshold:** >1 platitude per 2 sentences
+
+##### C. Self-Aware Deflation
+The text demonstrates **platitude awareness**:
+
+> "The best tool for the job isn't always the one marketed for professionals.
+> Sometimes it's the one with dragon decals and enough RAM to power a small nation."
+
+The setup is generic; the payoff is absurdly specific. This is **anti-slop technique**—using platitude structure to deliver unexpected concrete content.
+
+---
+
+#### AI Slop Score Components
+
+| Metric | Score | Weight | Weighted |
+|--------|-------|--------|----------|
+| Structural Formulaicity | 15% | 20% | 3.0 |
+| Lexical Vapor | 12% | 15% | 1.8 |
+| Rhetorical Overengineering | 10% | 15% | 1.5 |
+| Tonal Uncanniness | 8% | 10% | 0.8 |
+| Logical Void | 18% | 20% | 3.6 |
+| Platitude Density | 22% | 20% | 4.4 |
+
+**Total AI Slop Score: 15.1/100**
+
+---
+
+### The Core Theory: Why It Reads as Human
+
+#### The "Authentic Casual" Phenomenon
+
+1. **Specificity over symmetry:** Numbers and details (13 floors, 50+ tabs, 2 laptops) replace balanced rhetorical structures
+2. **Self-deprecation as authenticity marker:** Author positions herself as the problem, not the hero—AI tends toward protagonist framing
+3. **Hedging as confidence:** "Pretty sure," "vaguely," "might have been" signal comfort with uncertainty—AI avoids hedging to sound authoritative
+4. **Platitude deflation:** The moral sets up generic wisdom, then undercuts it with absurdity ("dragon decals")—AI completes the platitude arc
+5. **Conversational detritus:** Parentheticals, fragments, casual asides create the "human messiness" AI polishes away
+
+#### The Fatal Tell (Inverted)
+
+**It reads like someone who's comfortable being unpolished because the story is actually true.**
+
+Human writing—especially casual social media—carries specific, verifiable details because the author lived it. AI generates plausible-sounding generalities because it's interpolating patterns rather than recalling experiences.
+
+---
+
+## Low Slop Characteristics Summary
 
 For human-written text with natural variation, you would see:
 
-### Characteristics
 - Broken parallel structures for emphasis
-- Concrete-to-abstract ratio closer to 1:1 or better
+- Concrete-to-abstract ratio closer to 1:1 or better (this example: 4.8:1)
 - Sparing use of chiasmus (0-2 instances per 200 words)
-- Hedging language present ("might", "could", "sometimes")
+- Hedging language present ("might", "could", "sometimes", "pretty sure", "vaguely")
 - Specific evidence supporting claims
 - Natural messiness and revision markers
-
-### Sample Analysis Structure
-
-When analyzing low-slop text:
-1. Note the **absence** of formulaic patterns
-2. Highlight **concrete specificity**
-3. Identify **epistemic humility** markers
-4. Point out **evidence-based claims**
-5. Observe **natural variation** in structure
-6. Calculate **low scores** across all dimensions
-
-**Total AI Slop Score:** <30/100
+- "Too weird to be generated" details (IT break room photo, "Bri-proof" coinage)
 
 ---
 
