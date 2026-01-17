@@ -204,6 +204,31 @@ Watch for combinations that amplify AI tells:
 - Abstraction ladder + tautology = Circular ascent
 - Zero hedging + universal claims = Absolute vapor
 
+### Visual Structure Tells
+
+**Emoji Overuse as Structure**
+
+AI frequently uses emojis mechanically as formatting devices rather than for genuine emotional expression:
+
+**AI Tell patterns:**
+- **Emoji bullet points**: Using emojis instead of standard bullets (✓, ✗, 🚀, 💡, 🎯)
+- **Systematic deployment**: One emoji per item in a list, mechanically applied
+- **Category markers**: Using emojis to mark sections (:brain: for thinking, :computer: for technical)
+- **Forced visual interest**: Adding emojis to "break up" text without organic need
+
+**Examples of mechanical emoji usage:**
+```
+:rocket: Started the process
+:brain: Recognized the pattern
+:computer: Automated the workflow
+```
+
+**Human pattern:** Emojis used sparingly, irregularly, or for actual emotional emphasis ("This is amazing! 🎉")
+
+**AI pattern:** Emojis as structural scaffolding, one per parallel item, creating artificial visual hierarchy
+
+**Scoring impact:** Presence of 3+ mechanical emojis in short text adds +10-15% to slop score
+
 ### Context Matters
 
 Consider the domain:
@@ -214,6 +239,131 @@ Consider the domain:
 - **Literary prose**: Natural use of rhetorical devices
 
 Adjust thresholds based on genre expectations.
+
+## Common AI Phrases
+
+These phrases are strong indicators of AI-generated content. Human writers rarely use them, but they appear frequently in LLM outputs:
+
+### Opening Phrases
+- "what impressed me most"
+- "what struck me most"
+- "what stands out most"
+- "what's fascinating is"
+- "what's remarkable is"
+- "what's particularly interesting"
+
+### Transition/Connector Phrases
+- "it's worth noting that"
+- "it's important to note that"
+- "it's interesting to note that"
+- "it's crucial to understand"
+- "it's essential to recognize"
+- "this is particularly important"
+
+### Action Verbs (Overused)
+- "dive deep into"
+- "delve into"
+- "unpack this"
+- "navigate the complexities"
+- "let's explore"
+- "let's break this down"
+
+### Hedging Absolutes (Contradictory)
+- "here's the thing"
+- "the reality is"
+- "the truth is"
+- "it's no secret that"
+- "goes without saying"
+
+### Temporal Clichés
+- "at the end of the day"
+- "in today's world"
+- "in today's landscape"
+
+### Summary Phrases
+- "the key takeaway is"
+- "the bottom line is"
+
+**Usage tip**: Even one of these phrases in a short text is a significant AI tell. Multiple occurrences strongly suggest AI generation.
+
+## Deterministic Script Usage
+
+This skill includes a Python script (`scripts/sloptastic-analyzer.py`) that calculates deterministic metrics without requiring AI/NLP analysis.
+
+### Quick Start
+
+```bash
+# Analyze text from file
+python3 scripts/sloptastic-analyzer.py text.txt
+
+# Analyze text from clipboard (macOS)
+pbpaste | python3 scripts/sloptastic-analyzer.py --stdin
+
+# Analyze text from stdin
+echo "Your text here" | python3 scripts/sloptastic-analyzer.py --stdin
+```
+
+### What It Measures
+
+The deterministic script calculates:
+- **Connector Disease**: "that's why", "this is because" patterns (>1.5% = AI tell)
+- **Hedging Language**: "maybe", "might", "could" markers (zero = absolute certainty)
+- **Universal Quantifiers**: "always", "never", "every" (>3 per 100 words = absolutism)
+- **Definitional Tautologies**: "X isn't just Y, it's Z" patterns (>2 = strawman habit)
+- **Vague Intensifiers**: "real X", "natural growth", "authentic Y"
+- **Platitude Density**: Known platitudes from dictionary (>0.5 per sentence = vapor)
+- **Common AI Phrases**: "what impressed me most", "it's worth noting", "dive deep", "at the end of the day"
+- **Contradiction Patterns**: "quiet/subtle" followed by "shows up in"
+
+### Example: Mild Slop Text
+
+**Input:**
+```
+What impressed me most (and what was much needed) was how {Person} engaged
+with the attendees, listened to their needs, and committed to support their
+efforts. On more than one occasion they shared "we're working on it!" in
+response to requests from the community.
+```
+
+**Output:**
+```
+## Summary of AI Tells
+
+✗ ZERO hedging language (absolute certainty)
+✗ Common AI phrases detected (1)
+```
+
+**Interpretation:**
+- 2 flags detected
+- **Common AI phrase**: "What impressed me most" is a telltale AI opening
+- Zero hedging language (no "maybe", "perhaps", "often")
+- No connector disease, tautologies, platitudes, or vague intensifiers
+- Has specific concrete details ("engaged with attendees", direct quote)
+- **Estimated AI Slop Score: ~25-35%** (mild slop - likely AI-influenced or AI-generated)
+
+### Example: High Slop Text
+
+For high slop text (86%+ score), the script will flag:
+- ✗ High connector density (1.4%+)
+- ✗ ZERO hedging language
+- ✗ Multiple tautologies (3+)
+- ✗ High platitude density (1.0+ per sentence)
+- ✗ Contradiction patterns detected
+
+### When to Use
+
+- **Quick triage**: Fast check before full manual analysis
+- **Batch processing**: Analyze multiple texts systematically
+- **Objective baseline**: Get quantified metrics to supplement qualitative judgment
+- **CI/CD integration**: Automated content quality checks
+
+### Limitations
+
+The script handles deterministic patterns only. For complete analysis, manual review is needed for:
+- Parallel construction density (requires parsing)
+- Concrete vs abstract noun ratio (requires NLP)
+- Chiasmus detection (requires structure analysis)
+- Emotional labor asymmetry (requires subject-verb analysis)
 
 ## References
 

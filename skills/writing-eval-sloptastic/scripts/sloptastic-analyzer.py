@@ -50,6 +50,14 @@ class DeterministicMetrics:
     detected_platitudes: List[Tuple[str, int]]  # (platitude, count)
     platitude_density: float  # Platitudes per sentence
 
+    # Common AI phrases
+    common_ai_phrases: List[Tuple[str, int]]  # (phrase, count)
+    ai_phrase_count: int
+
+    # Emoji patterns
+    emoji_count: int
+    emoji_as_bullets: bool  # Detected emojis used as structural elements
+
     # Contradiction patterns
     contradiction_pairs: List[str]  # Matched contradiction patterns
     contradiction_count: int
@@ -110,6 +118,38 @@ class SlopAnalyzer:
         "from the outside",
         "not flashy",
         "handled with care"
+    ]
+
+    # Common AI opening/transition phrases
+    COMMON_AI_PHRASES = [
+        "what impressed me most",
+        "what struck me most",
+        "what stands out most",
+        "it's worth noting that",
+        "it's important to note that",
+        "it's interesting to note that",
+        "at the end of the day",
+        "the key takeaway is",
+        "the bottom line is",
+        "what's fascinating is",
+        "what's remarkable is",
+        "what's particularly interesting",
+        "this is particularly important",
+        "it's crucial to understand",
+        "it's essential to recognize",
+        "dive deep into",
+        "delve into",
+        "unpack this",
+        "let's explore",
+        "let's break this down",
+        "here's the thing",
+        "the reality is",
+        "the truth is",
+        "in today's world",
+        "in today's landscape",
+        "navigate the complexities",
+        "it's no secret that",
+        "goes without saying"
     ]
 
     # Definitional tautology patterns (X isn't just Y, it's Z)
@@ -198,7 +238,20 @@ class SlopAnalyzer:
         platitude_total = sum(count for _, count in platitude_matches)
         platitude_density = platitude_total / max(self.stats.sentence_count, 1)
 
-        # 7. Contradiction patterns
+        # 7. Common AI phrases
+        ai_phrase_matches = self._count_phrases(self.COMMON_AI_PHRASES)
+        ai_phrase_total = sum(count for _, count in ai_phrase_matches)
+
+        # 8. Emoji patterns
+        # Detect emojis (simple pattern matching for common emoji formats)
+        emoji_pattern = r':[a-z_]+:|[\U0001F300-\U0001F9FF]|[\u2600-\u26FF]|[\u2700-\u27BF]'
+        emoji_matches = re.findall(emoji_pattern, self.text)
+        emoji_total = len(emoji_matches)
+
+        # Detect if emojis are used as bullets (line starts with emoji or :emoji:)
+        emoji_bullets = bool(re.search(r'(^|\n)\s*(?::[a-z_]+:|[\U0001F300-\U0001F9FF])', self.text, re.MULTILINE))
+
+        # 9. Contradiction patterns
         contradiction_matches = []
         for quiet_pattern, loud_pattern in self.CONTRADICTION_PATTERNS:
             quiet_found = re.search(quiet_pattern, self.text_lower)
@@ -227,6 +280,10 @@ class SlopAnalyzer:
             intensifier_count=intensifier_total,
             detected_platitudes=platitude_matches,
             platitude_density=platitude_density,
+            common_ai_phrases=ai_phrase_matches,
+            ai_phrase_count=ai_phrase_total,
+            emoji_count=emoji_total,
+            emoji_as_bullets=emoji_bullets,
             contradiction_pairs=contradiction_matches,
             contradiction_count=len(contradiction_matches)
         )
@@ -309,8 +366,30 @@ class SlopAnalyzer:
                 report.append(f"- '{platitude}': {count}")
         report.append("")
 
+        # Common AI Phrases
+        report.append("## 7. Common AI Phrases\n")
+        report.append(f"**Total AI phrases detected**: {metrics.ai_phrase_count}")
+        report.append(f"**AI Tell**: Presence of common AI opening/transition phrases\n")
+        if metrics.common_ai_phrases:
+            report.append("**Found AI phrases**:")
+            for phrase, count in sorted(metrics.common_ai_phrases, key=lambda x: x[1], reverse=True):
+                report.append(f"- '{phrase}': {count}")
+        report.append("")
+
+        # Emoji patterns
+        report.append("## 8. Emoji Overuse as Structure\n")
+        report.append(f"**Total emojis detected**: {metrics.emoji_count}")
+        report.append(f"**Emojis as bullets**: {'Yes' if metrics.emoji_as_bullets else 'No'}")
+        report.append(f"**AI Tell**: >3 mechanical emojis or emojis as structural bullets\n")
+        if metrics.emoji_count > 0:
+            if metrics.emoji_as_bullets:
+                report.append("**⚠️ Emojis detected as structural elements (bullet points)**")
+            if metrics.emoji_count >= 3:
+                report.append(f"**⚠️ High emoji count ({metrics.emoji_count}) suggests mechanical usage**")
+        report.append("")
+
         # Contradictions
-        report.append("## 7. Contradiction Patterns\n")
+        report.append("## 9. Contradiction Patterns\n")
         report.append(f"**Total contradictions**: {metrics.contradiction_count}")
         report.append(f"**AI Tell**: Claims of subtlety followed by obvious manifestations\n")
         if metrics.contradiction_pairs:
@@ -339,6 +418,16 @@ class SlopAnalyzer:
 
         if metrics.platitude_density > 0.5:
             ai_tells.append(f"✗ High platitude density ({metrics.platitude_density:.2f} per sentence)")
+
+        if metrics.ai_phrase_count > 0:
+            ai_tells.append(f"✗ Common AI phrases detected ({metrics.ai_phrase_count})")
+
+        if metrics.emoji_count >= 3 or metrics.emoji_as_bullets:
+            emoji_note = f"✗ Emoji overuse as structure ({metrics.emoji_count} emojis"
+            if metrics.emoji_as_bullets:
+                emoji_note += ", used as bullets"
+            emoji_note += ")"
+            ai_tells.append(emoji_note)
 
         if metrics.contradiction_count > 0:
             ai_tells.append(f"✗ Contradiction patterns detected ({metrics.contradiction_count})")
