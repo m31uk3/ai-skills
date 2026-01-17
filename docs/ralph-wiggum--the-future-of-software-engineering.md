@@ -37,7 +37,7 @@ graph TD
 ```
 ### What do we do now?
 
-As a TPM my goal isn't to build production-grade software, but to identify what the new the “Light speed” is for our SDLC (e.g. the fastest speed it can cycle)  
+Our goal isn't to build production-grade software out of the gate, but to identify what the new the “Light speed” is for our SDLC (e.g. the fastest speed it can cycle)  
 Geoffrey Huntley [1](https://www.youtube.com/watch?v=4Nna09dG_c0), [2](https://ghuntley.com/ralph/), [3](https://community.inkdrop.app/23afeb845d96b015582b86156a52ad82/mriJwvCq) describes this as a very different skillset; most similar to learning playing a guitar or learning how to drive a commercial 18-wheeler truck. I have a lots of thoughts on where it’s going, what’s needed and how to change E2E work to get ready for those tools. i.e.:
 
 1. think about organizing specifications in hierarchies of files so the specs are smaller and you don’t burn context (they also easier to read this way, BTW)
