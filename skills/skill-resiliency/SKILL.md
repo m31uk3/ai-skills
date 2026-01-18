@@ -1,7 +1,6 @@
 ---
 name: skill-resiliency
 description: This skill should be used when the user asks to "add resiliency to a skill", "make this skill more robust", "improve error handling", "add validation mechanisms", "create self-correcting behavior", or discusses determinism, robustness, error correction, or homeostatic patterns in Agent Skills. Applies biological resiliency principles from Michael Levin's work to Agent Skill design.
-version: 1.0.0
 ---
 
 # Skill Resiliency
