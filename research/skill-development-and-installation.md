@@ -256,3 +256,288 @@ echo "Skill installed. Restart Claude Code or start new session to use."
 
 - `/packages/skills/*.skill` - Packaged skill files
 - `/skills/*/` - Source skill directories
+
+---
+
+## Case Study: Building Guided OODA Loop Skill
+
+**Date:** January 17, 2026
+**Skill:** `guided-ooda-loop`
+**Status:** ✅ Complete and packaged
+
+### Overview
+
+The Guided OODA Loop skill implements a universal pattern for structured LLM interaction across all domains (software, strategy, writing, research). Based on the Prompt-Driven Development (PDD) SOP, it manages finite context windows through phased progression.
+
+### The 9-Step Build Workflow
+
+#### Step 1: Understand the Skill ✅
+- **Source Material:** PDD SOP from `/Users/ljack/github/resources/code/agent-sop/agent-sops/pdd.sop.md`
+- **Key Decisions:**
+  - Skill name: `guided-ooda-loop`
+  - Core concept: Universal pattern (not just software)
+  - Primary value: Context window management through phased progression
+  - Domain scope: Universal (software, strategy, writing, research)
+  - ACT phase: Creates execution-ready artifacts (not just planning)
+
+**Trigger Phrases:**
+- "I have an idea for..."
+- "Help me design/build/create..."
+- "Guide me through..."
+- "Walk through my thinking..."
+- Mentions of: OODA, RPI, PDD
+
+#### Step 2: Plan Reusable Contents ✅
+**Resources Structure:**
+```
+guided-ooda-loop/
+├── SKILL.md                      # Core OODA principles (1,500-2,000 words)
+├── references/
+│   ├── ooda-pattern.md          # Deep dive on OODA theory (2,000-5,000 words)
+│   └── domain-applications.md   # Domain implementations (2,000-5,000 words)
+├── scripts/                     # Reserved for future
+└── assets/                      # Reserved for future
+```
+
+**Directory Structure Created by Skill:**
+```
+ooda-loop-{unique-name}-{DDMMMYY.HHMMSS}/
+├── rough-idea.md
+├── observe/
+│   ├── research.md
+│   └── idea-honing.md
+├── decide/
+│   ├── to-do.md
+│   └── high-level-design.md
+├── act/
+│   ├── implementation-plan.md
+│   └── detailed-design.md
+└── summary.md                   # YAML frontmatter status
+```
+
+#### Step 3: Initialize the Skill ✅
+```bash
+python3 /Users/ljack/.claude/plugins/cache/anthropic-agent-skills/\
+document-skills/69c0b1a06741/skills/skill-creator/scripts/init_skill.py \
+guided-ooda-loop --path /Users/ljack/github/ai-skills/skills
+```
+
+**Result:** Base structure with template SKILL.md
+
+#### Step 4: Edit the Skill ✅
+**Files Created:**
+1. `SKILL.md` - 1,743 words (ideal range: 1,000-3,000)
+2. `references/ooda-pattern.md` - 2,287 words
+3. `references/domain-applications.md` - 3,380 words
+
+**Total Content:** 7,410 words
+
+#### Step 5: Review with skill-reviewer ✅
+**Initial Rating:** 4/5 stars ⭐⭐⭐⭐
+
+**Critical Issues Identified:**
+- Placeholder files present (api_reference.md, assets/example_asset.txt, scripts/example.py)
+- Description too long (85 words, should be 50-60)
+- Incomplete domain sections (2-4) in domain-applications.md
+- Contradictory language about ACT phase
+
+**Strengths:**
+- Exceptional theoretical foundation
+- Outstanding progressive disclosure
+- Comprehensive software development section
+- Clear constraints using "MUST", "NEVER", "ALWAYS"
+
+#### Step 6: Iterate Based on Feedback ✅
+**Improvements Made:**
+
+1. **Removed placeholder files**
+   ```bash
+   rm references/api_reference.md assets/example_asset.txt scripts/example.py
+   ```
+
+2. **Condensed description:** 85 → 56 words
+   - Before: "Universal pattern for structured LLM interaction that manages finite context windows through phased progression (Observe-Orient-Decide-Act). Use when the user has a complex problem requiring structured breakdown..."
+   - After: "Universal pattern for structured LLM interaction managing finite context windows through phased progression (Observe-Orient-Decide-Act). Use when the user has a complex problem, wants to design/build/create something..."
+
+3. **Added context usage monitoring**
+   - Check context at each phase transition
+   - Warn if usage exceeds 60%
+   - Provide clear resume instructions
+
+   **Warning Template:**
+   ```
+   ⚠️ CONTEXT USAGE WARNING: Current context at [X]% (>60%)
+
+   For optimal results, consider starting a new context window.
+
+   To resume in new window:
+   1. Read summary.md to understand current state
+   2. Load relevant artifacts for current phase
+   3. Continue from [current phase]
+   ```
+
+4. **Clarified ACT phase** (eliminated contradictions)
+   - Removed "planning-only" language
+   - Added: "Creates execution-ready artifacts only. Does NOT execute any tasks or actions."
+   - Updated throughout SKILL.md and references
+
+5. **Reorganized domain templates**
+   - Moved "Universal Principles" before appendix
+   - Renamed Sections 2-4 to "Template A-C" in appendix
+   - Added status note: Section 1 complete, templates are frameworks
+
+**Post-Iteration Rating:** 5/5 stars ⭐⭐⭐⭐⭐
+
+#### Step 7: Add to Plugin Structure ✅
+**Decision:** Standalone skill (not part of plugin)
+- Location: `/Users/ljack/github/ai-skills/skills/guided-ooda-loop/`
+- Skipped plugin integration
+
+#### Step 8: Validate Plugin ✅
+**Status:** Validation passed during packaging (Step 9)
+
+#### Step 9: Package the Skill ✅
+```bash
+python3 /Users/ljack/.claude/plugins/cache/anthropic-agent-skills/\
+document-skills/69c0b1a06741/skills/skill-creator/scripts/package_skill.py \
+/Users/ljack/github/ai-skills/skills/guided-ooda-loop
+```
+
+**Result:**
+- Package created: `/Users/ljack/github/ai-skills/packages/skills/guided-ooda-loop.skill`
+- File size: 20KB
+- Validation: ✅ Passed
+- Files included: SKILL.md, domain-applications.md, ooda-pattern.md
+
+### Git Commit
+```bash
+git commit -m "Add guided-ooda-loop skill with context monitoring
+
+Implements universal OODA pattern for structured LLM interaction across
+all domains (software, strategy, writing, research).
+
+Key features:
+- Context usage monitoring at each phase transition (>60% warnings)
+- Execution-ready artifacts with actionable checklists
+- Condensed 56-word description with comprehensive trigger phrases
+- Progressive disclosure: 1,743-word SKILL.md + 5,667-word references
+- Complete software development section with 8-step PDD process
+- Domain templates (strategy, writing, research) in appendix
+
+Technical improvements:
+- Removed placeholder files for production readiness
+- Direct ACT phase language (no contradictions)
+- Universal principles clearly separated from domain templates
+- Checkpoint system for cross-session resumption"
+
+git push
+```
+
+**Commit:** `619b9a0`
+
+### Current Packaging Status
+
+**As of January 17, 2026:**
+
+| Skill Name | Status | Package Location |
+|------------|--------|------------------|
+| ai--workflow-engineering | ❌ NOT PACKAGED | - |
+| anthropic | ❌ NOT PACKAGED | - |
+| comms--response-quality-analysis | ❌ NOT PACKAGED | - |
+| **guided-ooda-loop** | ✅ **PACKAGED** | `packages/skills/guided-ooda-loop.skill` |
+| prompt-driven-development | ✅ PACKAGED | `packages/skills/prompt-driven-development.skill` |
+| skill-resiliency | ❌ NOT PACKAGED | - |
+| validated-knowledge-synthesis | ✅ PACKAGED | `packages/skills/validated-knowledge-synthesis.skill` |
+| writing-eval-sloptastic | ✅ PACKAGED | `packages/skills/writing-eval-sloptastic.skill` |
+
+**Summary:** 4/8 skills packaged (50%)
+
+### Key Learnings
+
+#### 1. Context Window Management
+- Context monitoring is critical for OODA workflows
+- 60% threshold provides optimal warning time
+- Resume instructions must be explicit and actionable
+
+#### 2. Description Optimization
+- Target: 50-60 words
+- Include all trigger phrases
+- Third-person voice
+- Specific scenarios over generic descriptions
+
+#### 3. Progressive Disclosure
+- SKILL.md: Core concepts (1,000-3,000 words)
+- References: Deep dives (2,000-5,000+ words each)
+- Prevents overwhelming users while maintaining depth
+
+#### 4. Domain Adaptability
+- Universal principles section anchors the pattern
+- Domain-specific sections show adaptation
+- Templates provide structure for future expansion
+
+#### 5. Artifact Quality
+- Remove ALL placeholder files before packaging
+- Ensure internal consistency (no contradictions)
+- Direct declarations over vague statements
+- Clear status indicators (complete vs. template)
+
+#### 6. Workflow Efficiency
+- 9-step process ensures quality
+- Iteration (Step 6) is critical - don't skip
+- Review feedback drives major improvements
+- Packaging validates the entire structure
+
+### Installation
+
+```bash
+# Extract to personal skills directory
+unzip packages/skills/guided-ooda-loop.skill -d ~/.claude/skills/
+
+# Verify installation
+ls ~/.claude/skills/guided-ooda-loop/
+
+# Restart Claude Code or start new session
+```
+
+### References
+
+**Checkpoint Document:** `/Users/ljack/github/ai-skills/docs/guided-ooda-loop-checkpoint.md`
+**Workflow Guide:** `/Users/ljack/github/ai-skills/docs/skill-creation-workflow-and-agents.md`
+**Source Material:** `/Users/ljack/github/resources/code/agent-sop/agent-sops/pdd.sop.md`
+
+---
+
+## Repository Structure Summary
+
+### Source Skills (`/skills/`)
+```
+skills/
+├── ai--workflow-engineering/
+├── anthropic/
+├── comms--response-quality-analysis/
+├── guided-ooda-loop/               ← Latest addition (Jan 17, 2026)
+├── prompt-driven-development/
+├── skill-resiliency/
+├── validated-knowledge-synthesis/
+└── writing-eval-sloptastic/
+```
+
+### Packaged Skills (`/packages/skills/`)
+```
+packages/skills/
+├── guided-ooda-loop.skill          ← Latest addition (20KB, Jan 17, 2026)
+├── prompt-driven-development.skill
+├── validated-knowledge-synthesis.skill
+└── writing-eval-sloptastic.skill
+```
+
+### Documentation (`/docs/`)
+```
+docs/
+├── agent-skills-specification.md
+├── claude-code-skills-guide.md
+├── guided-ooda-loop-checkpoint.md   ← Build session checkpoint
+└── skill-creation-workflow-and-agents.md
+```
+
+**Last Updated:** January 17, 2026
