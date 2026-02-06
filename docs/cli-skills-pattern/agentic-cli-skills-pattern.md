@@ -570,6 +570,8 @@ The pattern succeeds because it respects three constraints simultaneously:
 2. **Security requires layers**: No single mechanism is sufficient
 3. **Tools already exist**: The Unix philosophy (small tools, composed via pipes) translates directly into the agent era
 
+For a deep analysis of the Unix philosophy correlation — how every Unix primitive (pipes, man pages, $PATH, chmod, package managers) maps precisely to agent architecture — see the companion document: **[Unix Philosophy Correlation](./unix-philosophy-correlation.md)**.
+
 The stages diagram (Section 2) provides the framework for understanding where any given agentic capability sits on the spectrum---from a raw `git` command (Stage 0) to a fully sandboxed multi-skill workflow (Stage 5)---and what criteria differentiate each stage.
 
 Python, shell, and other languages are orthogonal to this hierarchy. They participate at every stage. The stages describe **abstraction and governance layers**, not language choices.
