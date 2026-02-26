@@ -66,3 +66,5 @@ Report the two output filenames to the user. If the user wants a summary, read t
 | "No SRT file found" | No subtitles in target language | Check video has captions enabled |
 | Tripled text in output | Using old v1 script | Use this skill's script which includes deduplication |
 | `--fix` fails with no SRT | Previous run cleaned up intermediate files | Run without `--fix` to re-download |
+
+**Why does tripling happen?** See [references/faqs.md](references/faqs.md) for a detailed explanation of YouTube's rolling VTT format and how the dedup works.
