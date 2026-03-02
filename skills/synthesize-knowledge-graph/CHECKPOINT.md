@@ -1,8 +1,7 @@
 # Synthesize Knowledge Graph — Design Checkpoint
 
 ## Date: 2026-02-26
-
-## Status: Skill design in progress. Base decisions made. Open research questions remain.
+## Status: Notation decided. Page-level structure design in progress.
 
 ---
 
@@ -15,136 +14,130 @@
 
 ### K-DAG Definition (see /GenAI/Primitives/K-DAG.md)
 - Nodes = facts, entities, concepts
-- Edges = typed directed relationships (causal, dependency, contradicts, supports, enables, subsumes) with confidence scores
+- Edges = typed directed relationships with confidence scores
 - Hierarchical, not flat. The hierarchy IS the knowledge.
 - Modular — load on demand per inference query
 - Edges are the value — context rot preferentially destroys edges
 
-### Intersection as First-Class Operation
-- Accept 2+ K-DAGs as input, produce a new K-DAG with cross-graph edges and emergent nodes
-- This was the most powerful operation discovered in the session (see three-way intersection docs)
+### Notation: [[Wikilinks]] + Mermaid Only (FINAL)
+- **[[wikilinks]]** in prose for node references (native Obsidian)
+- **Mermaid flowchart** as single source of structural truth
+- No custom `::rel` syntax. No plugin dependencies.
+- LLM reads/writes mermaid to reconstruct/update the graph
+- Future convergence target: Obsidian integrated knowledge graph views
 
-### Rich Edge Typing
-- Typed edges: causal, dependency, contradicts, supports, enables, subsumes
-- With confidence scores
+### Safe Obsidian Mermaid Subset
+Use only syntax confirmed working in Obsidian's bundled mermaid (~11.4):
+- `A -->|relationship| B` — typed edges (the core triple)
+- `<-->` — bidirectional edges
+- `-.->` / `==>` — dotted/thick for visual distinction
+- `subgraph Name ... end` — domain clustering / hierarchy
+- `classDef` + `:::` — node typing via CSS classes
+- **AVOID:** `@{}` node metadata (broken), edge IDs `e1@` (broken), rendering directives
+
+### Edge Limit Strategy
+- ~280 edges max per mermaid block in Obsidian
+- Split across multiple mermaid blocks per domain/subgraph
+- Each block is self-contained and parseable
+
+### Intersection as First-Class Operation
+- Accept 2+ K-DAGs as input, produce a new K-DAG
+- Three-layer output model:
+  1. **Consensus** — nodes/edges present in both (IAR semantics: survives all interpretations)
+  2. **Tensions** — nodes/edges where sources conflict (paraconsistent: preserved, not resolved)
+  3. **Extensions** — nodes/edges from single source (brave semantics: included with provenance)
+
+### Rich Edge Typing (Expanded)
+
+#### Structural Edges
+| Type | Meaning |
+|------|---------|
+| causal | A causes B |
+| dependency | A requires B |
+| enables | A makes B possible |
+| subsumes | A contains B as subset |
+
+#### Epistemic Edges
+| Type | Meaning |
+|------|---------|
+| supports | A strengthens B |
+| contradicts | A conflicts with B |
+| tensions | A and B coexist unresolved (productive tension) |
+| qualifies | A narrows/constrains B without contradicting |
+| supersedes | A replaces B (B preserved for lineage) |
+| assumes | A depends on unstated assumption B |
+
+#### Special Node Types
+| Type | Purpose |
+|------|---------|
+| tension | Marks unresolved conflict between 2+ nodes |
+| gap | Marks known unknown / missing evidence |
+| synthesis | Product of resolving/qualifying a tension |
 
 ### Output Format
 - YAML frontmatter + Mermaid + Prose in one .md file
-- Mermaid graph required for every K-DAG (at minimum: knowledge ontology / hierarchy)
+- Mermaid graph required for every K-DAG
+- Mermaid block IS the ontology (not a picture of it)
 
-### Mermaid as Visualization Layer
-- Mermaid renders everywhere: GitHub, Obsidian, VS Code, GitLab, Notion
-- LLMs generate mermaid natively — zero friction
-- 74k+ GitHub stars, 8M+ users, $7.5M seed funding (Sequoia, Microsoft M12)
-- MCP server exists for Claude Code integration
-
----
-
-## Leaning Toward (Not Final)
-
-### Simplify Further — [[Wikilinks]] + Mermaid Only
-- User leans toward dropping custom ::rel syntax entirely
-- Use only [[wikilinks]] for node references in prose (native Obsidian support)
-- Let the mermaid code block be the single source of structural truth
-- This means: prose contains [[NodeName]] links, mermaid block contains the typed ontology
-- The MGN HTML renderer (Cytoscape) becomes optional power tool, not required
-
-### BUT — Open Research Question
-- **Does a notation already exist that intersects prose and ontologies in graph markdown syntax?**
-- Check GitHub, academic papers, existing tools
-- Someone must have explored this problem before
-- If a good solution exists, adopt it rather than inventing custom notation
+### Mermaid as Structural Truth Source
+- No programmatic parser needed — LLM is the parser
+- `A -->|rel| B` maps cleanly to subject-predicate-object triples
+- Subgraphs map to domain/category hierarchy
+- `classDef`/`:::` maps to node type classification
+- Trivially parseable by regex: `^(\w+)\s*(-->|-.->|==>|<-->)\|([^|]+)\|\s*(\w+)$`
 
 ---
 
-## Open Research (Resume Here)
+## Prior Art Research (Completed 2026-02-26)
 
-### 1. Prior Art Search — Prose + Ontology Markdown Notation
-Search for existing solutions that embed graph/ontology structure within markdown prose:
-- GitHub repos combining knowledge graphs with markdown
-- Academic work on "literate ontology" or "narrative knowledge graphs"
-- Tools like Foam, Dendron, Logseq, TiddlyWiki — do any support typed relationships?
-- Obsidian plugins for typed links / relationship definitions
-- Any markdown extension that supports inline relationship notation
+### What Exists
+- **Breadcrumbs plugin:** Hierarchy only (up/down/same/next/prev). No arbitrary typed edges.
+- **Juggl plugin:** Typed links via `- linkType [[Node]]`. Single-word types only. Niche adoption. Developer built Neo4j export (hit Obsidian limits).
+- **Dataview:** Query engine for YAML/inline fields. Can generate mermaid FROM metadata. Never reads mermaid AS data.
+- **Argdown:** Markdown-native argument mapping (`+` support, `-` attack, `_` undercut). Fenced code blocks like mermaid. Interesting but too specialized.
+- **Hegelion:** LLM dialectical reasoning (separate calls for thesis/antithesis/synthesis). MCP server exists.
+- **OntoMermaid:** OWL → mermaid (one direction only).
+- **Carleton X-Lab:** GPT-3 reading mermaid ER diagrams → RDF-Turtle. LLM as parser (same approach we're taking).
 
-### 2. Prose Integration Gap
-The unresolved design tension:
-- Mermaid lives in fenced code blocks, separate from prose
-- MGN's `[[Node]]` and `::rel` notation embeds structure IN prose
-- If we drop ::rel, the mermaid block becomes structurally disconnected from the prose
-- [[Wikilinks]] connect nodes but DON'T type the edges
-- Question: Is there a lightweight way to type edges within prose without custom notation?
+### What Nobody Has Done
+- Treated mermaid as canonical graph definition (we're first)
+- Arbitrary typed edges in Obsidian (Breadcrumbs = hierarchy only)
+- Cross-document K-DAG intersection
+- Tension preservation as first-class operation
+- Confidence scores on relationships
 
-### 3. ::config Block Decision
-- MGN's `::config` defines typed ontology schemas (node types with shapes/colors/sizes)
-- Mermaid has `classDef` and `style` directives that partially cover this
-- If we use mermaid-only, can we replicate the typed ontology schema within mermaid syntax?
-
-### 4. MGN HTML Renderer Role
-- File: /Users/ljack/Downloads/Markdown_Graph_Notation_Renderer.html
-- Uses Cytoscape.js for interactive graph visualization
-- Bidirectional click-highlight between prose and graph nodes
-- Question: Keep as optional power tool? Bundle with skill? Or drop entirely?
+### Tension Preservation Prior Art
+- **Zettelkasten:** Never delete. Contradictions coexist via branching. Question notes as tension markers. Gap notes for known unknowns.
+- **Paraconsistent logic:** Third truth value for contradictions. Reasoning continues for non-conflicting parts.
+- **IAR/Brave semantics:** Formal models for intersection (conservative) vs union (exploratory) of conflicting knowledge.
+- **IBIS (Issue-Based Information System):** `#issue`, `#position`, `#pro`, `#con` tagging. Practitioners use in Obsidian.
 
 ---
 
 ## Session Artifacts (All in Obsidian)
 
 ### Documents Created
-1. **Agentic Search vs Agentic RAG** — Curated context synthesis
-   - Path: /GenAI/Primitives/Agentic Search vs Agentic RAG.md
+1. **Agentic Search vs Agentic RAG** — /GenAI/Primitives/Agentic Search vs Agentic RAG.md
+2. **Intersection — Agentic Search x Capability-Dissipation Gap** — 7 nodes
+3. **Intersection — Agentic Search x Capability-Dissipation Gap x Tobi Lutke** — 12 nodes
+4. **K-DAG** — /GenAI/Primitives/K-DAG.md
 
-2. **Intersection — Agentic Search x Capability-Dissipation Gap** — Two-way intersection (7 nodes)
-   - Path: /GenAI/Primitives/Intersection - Agentic Search x Capability-Dissipation Gap.md
-
-3. **Intersection — Agentic Search x Capability-Dissipation Gap x Tobi Lutke** — Three-way intersection (12 nodes)
-   - Path: /GenAI/Primitives/Intersection - Agentic Search x Capability-Dissipation Gap x Tobi Lutke.md
-
-4. **K-DAG** — Dedicated definition document
-   - Path: /GenAI/Primitives/K-DAG.md
-
-### Key Insight from Session
+### Key Insight
 **"Structural understanding compounds; surface matching doesn't."**
 
-This applies at every level: retrieval (RAG vs agentic search), code search (grep vs ast-grep), AI usage (prompting vs context engineering), organizational AI (pilot programs vs constitutions), leadership (consensus vs jazz band), career (learn AI vs map the gap).
-
-### The Bug Hunt Example
-Steel man for agentic search: "checkout is slow" → RAG retrieves checkout files (dead end) → agentic search follows imports across 3 files → discovers the cause lives in the RELATIONSHIP between files, not in any single file.
-
-VKS does the same thing for knowledge synthesis. K-DAGs encode this so the relationships survive context rot.
-
 ### Context Rot Thesis
-- Context rot preferentially destroys edges (relationships) while preserving nodes (facts)
-- Hierarchical/DAG knowledge is most vulnerable because the reasoning chain breaks if ANY intermediate edge is dropped
-- K-DAG defenses: modular loading, explicit edge encoding, hierarchical context isolation, eval frameworks that verify edge preservation
-- User's original K-DAG thesis (Feb 2025) predicted this exact finding
+- Context rot preferentially destroys edges while preserving nodes
+- K-DAG defenses: modular loading, explicit edge encoding, hierarchical context isolation
+- User's original K-DAG thesis (Feb 2025) predicted this
 
 ---
 
-## Source Materials Referenced
+## Next Steps
 
-### Primary Sources
-- Eitan Borgnia (Relace/LinkedIn) — Fast Agentic Search, Goldilocks regime
-- Reddit r/Rag — Traditional RAG vs Agentic RAG
-- KWDB YouTube — "$7,000 Raise AI Is Giving You" (capability-dissipation gap)
-- Tobi Lutke / Acquired podcast — "How to Live in Everyone Else's Future"
-- User's K-DAG thesis (Feb 2025) — DAGs in LLM Promotion
-- MGN HTML Renderer — /Users/ljack/Downloads/Markdown_Graph_Notation_Renderer.html
-
-### Prior Writing Found
-- Context Windows Are Actors (Erlang OTP of AI)
-- Ralph Wiggum Loop (Geoffrey Huntley context rot)
-- Context Engineering for AI Coding Agents (smart zone / dumb zone)
-- Palantir Ontology Core Concepts
-- Knowledge Graph Ideas
-
----
-
-## Next Steps (When Resuming)
-
-1. **Research prior art** — prose + ontology graph notation (GitHub, tools, academic)
-2. **Decide notation** — [[wikilinks]] + mermaid only? Or lightweight ::rel? Based on what prior art reveals.
-3. **Draft SKILL.md** — Using skill-creator patterns from the official guide
-4. **Define test cases** — 2-3 realistic synthesis prompts
-5. **Build references/** — Edge type definitions, mermaid templates, output format spec
-6. **Iterate** — Run evals, get feedback, improve
+1. ~~Research prior art~~ — DONE
+2. ~~Decide notation~~ — DONE: [[wikilinks]] + mermaid only
+3. **Design page-level micro-structure** — What does a K-DAG .md file look like section by section? How does micro (page) feed macro (vault-wide graph)?
+4. **Draft full SKILL.md** — Complete workflow with all phases
+5. **Define test cases** — 2-3 realistic synthesis + intersection prompts
+6. **Build references/** — Edge type definitions, mermaid templates, output format spec, example K-DAGs
+7. **Iterate** — Run evals, get feedback, improve
