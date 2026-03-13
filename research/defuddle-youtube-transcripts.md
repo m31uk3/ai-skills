@@ -287,3 +287,50 @@ Chapter sources (priority order):
 | `src/utils/content-extractor.ts` | Maps Defuddle variables to template variables (`{{transcript}}`) |
 | `src/manifest.chrome.json` | `declarativeNetRequest` permission |
 | `src/manifest.firefox.json` | `webRequest` + `webRequestBlocking` permissions |
+
+## FAQ
+
+### 1. Where does the Reader view content live in memory, and can you persist it into Obsidian?
+
+**In memory, Reader content lives in three places:**
+
+1. **`Reader.originalHTML`** (static string property) — A snapshot of `document.documentElement.outerHTML` taken before Reader replaces the page. Used only for `Reader.restore()` to undo Reader mode.
+2. **`content`** (local variable in `Reader.apply()`) — The extracted HTML string returned by `Defuddle.parseAsync()`. Lives briefly during setup, then parsed into a temporary DOM via `DOMParser.parseFromString()`.
+3. **Live DOM** — The final resting place. Content nodes are moved into an `<article>` element inside `.obsidian-reader-content > main > article`. This _is_ the page the user sees — it's not stored separately.
+
+**The Reader view is purely in-memory — it exists only in the browser tab's live DOM, which lives in the browser's renderer process heap (system RAM).** The browser may also hold it in its internal page cache (e.g. Chrome's bfcache for back/forward navigation), but this is still volatile memory — not disk. Nothing is written to disk, `localStorage`, `sessionStorage`, IndexedDB, or extension storage. If the user closes the tab, navigates away, or toggles Reader off (Alt+Shift+R), the rendered content is gone. The `Reader.originalHTML` string (used to restore the original page) similarly lives only in the content script's JavaScript heap — also system RAM, also lost on navigation or tab close.
+
+**The only path to disk is clicking Web Clipper to clip it into Obsidian.**
+
+When you click the Web Clipper extension icon while Reader mode is active, `content.ts:getPageContent` runs `new Defuddle(document, {url}).parseAsync()` on the **current document** — which _is_ the Reader DOM, not the original page. So Defuddle re-extracts from the clean Reader view (including the YouTube transcript HTML), and the result flows into the normal clipping pipeline:
+
+- **`{{content}}`** — Markdown with the transcript embedded
+- **`{{transcript}}`** — Plain text transcript (`**M:SS** · text` format)
+- All other template variables (`{{title}}`, `{{author}}`, etc.) populated from the Defuddle result
+
+These get compiled through the user's template and saved to Obsidian via the `obsidian://new` URI scheme. No special mechanism needed — Reader mode just gives you a cleaner extraction source.
+
+### 2. How does Defuddle auto-detect the transcript URL, and what happens if YouTube changes it?
+
+**There is no hardcoded transcript URL.** The caption track URL is dynamically discovered at runtime through a two-step process:
+
+**Step 1 — Ask YouTube's InnerTube API for caption metadata:**
+
+Defuddle POSTs to `https://www.youtube.com/youtubei/v1/player?prettyPrint=false` with an Android client context (`clientName: "ANDROID"`, `clientVersion: "20.10.38"`) and the video ID. YouTube responds with the full player data, which includes a `captions.playerCaptionsTracklistRenderer.captionTracks[]` array. Each entry has a `baseUrl` — this is the dynamically generated, signed URL pointing to the timedtext XML on YouTube's caption CDN.
+
+**Step 2 — Fetch the caption XML from the discovered URL:**
+
+Defuddle picks the best track (prefers English, falls back to first available), validates the hostname ends with `.youtube.com` (SSRF prevention), then fetches the XML. The URL looks something like `https://www.youtube.com/api/timedtext?v=...&lang=en&fmt=srv3&...` with expiring signature parameters — it's not a stable URL, it's generated per-request by YouTube.
+
+**What could break and what's resilient:**
+
+| Surface | Risk | Notes |
+|---------|------|-------|
+| InnerTube `/player` endpoint | **Medium** | This is the main fragility point. If Google changes the API path, response schema, or starts rejecting the Android client context, Defuddle would need to update `INNERTUBE_API_URL`, `INNERTUBE_CONTEXT`, and/or the response traversal path (`captions.playerCaptionsTracklistRenderer.captionTracks`). The constants at the top of `youtube.ts` (lines 17–32) are designed to make this a quick fix. |
+| InnerTube `/next` endpoint | **Medium** | Same risk for chapter data. The deeply nested response paths for player bar chapters and engagement panel chapters could change. |
+| Android client version | **Low-Medium** | The hardcoded version `20.10.38` may eventually be rejected. Updating `INNERTUBE_CLIENT_VERSION` is a one-line fix. |
+| Caption XML format | **Low** | Two formats are already handled (srv3 and simple). These have been stable for years. |
+| Blocking/rate limiting | **Very Low (browser paths)** | In Paths 2 and 3 (Web Clipper Clip and Reader), the `fetch()` calls originate from the user's browser with the user's cookies and IP. To YouTube, this is **indistinguishable from a normal user request** — it's a real browser, on a real IP, with real session cookies, making the same InnerTube API calls that YouTube's own player JavaScript makes. There's no bot fingerprint to detect. |
+| Blocking/rate limiting | **Higher (Worker path)** | In Path 1 (defuddle.md Cloudflare Worker), requests come from Cloudflare edge IPs without user cookies, using a spoofed Android User-Agent. This is more detectable and more likely to be rate-limited or blocked. |
+
+**In summary:** The transcript URL is never hardcoded — it's discovered fresh each time via the InnerTube API. The main risk is Google changing the InnerTube API contract (endpoints, client validation, response schema), not the caption URL itself. The browser-based paths (Web Clipper) are inherently robust against blocking because they execute as the user's own browser session.
