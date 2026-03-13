@@ -334,3 +334,263 @@ Defuddle picks the best track (prefers English, falls back to first available), 
 | Blocking/rate limiting | **Higher (Worker path)** | In Path 1 (defuddle.md Cloudflare Worker), requests come from Cloudflare edge IPs without user cookies, using a spoofed Android User-Agent. This is more detectable and more likely to be rate-limited or blocked. |
 
 **In summary:** The transcript URL is never hardcoded — it's discovered fresh each time via the InnerTube API. The main risk is Google changing the InnerTube API contract (endpoints, client validation, response schema), not the caption URL itself. The browser-based paths (Web Clipper) are inherently robust against blocking because they execute as the user's own browser session.
+
+### 3. What transcript variants does YouTube actually serve, and is Defuddle picking the best one?
+
+YouTube can serve **multiple English transcript tracks** for a single video. The InnerTube `/player` API returns a `captionTracks[]` array where each entry has a `kind` field that distinguishes them:
+
+| `kind` | `vssId` | Meaning | Quality |
+|--------|---------|---------|---------|
+| *(empty)* | `.en` | Creator-uploaded transcript | Higher — proper punctuation, capitalization, sentence-level segments |
+| `asr` | `a.en` | Auto-generated (speech recognition) | Lower — word-level segments, mid-sentence breaks, transcription errors |
+
+**Tested with two reference videos:**
+
+**Video 1: `zcwqTkbaZ0o`** (Level1Techs — no creator transcript)
+- InnerTube returns **1 track**: `{languageCode: "en", kind: "asr", vssId: "a.en"}`
+- yt-dlp surfaces two keys (`en-orig`, `en`) but they are **byte-identical** — same content, same MD5
+
+**Video 2: `DAX2_mPr9W8`** (Technology Connections — has creator transcript)
+- InnerTube returns **2 tracks**, both `languageCode: "en"`:
+  - Track 0: `{kind: (none), vssId: ".en"}` — creator-uploaded
+  - Track 1: `{kind: "asr", vssId: "a.en"}` — auto-generated
+- yt-dlp surfaces this as `subtitles.en` (creator) + `automatic_captions.en-orig` / `automatic_captions.en` (auto, identical)
+
+**Quality comparison (first few segments of `DAX2_mPr9W8`):**
+
+| Creator transcript | Auto-generated |
+|--------------------|----------------|
+| `Hello and welcome to No Effort November,` | `Hello and welcome to Noeffort November,` |
+| `a series of videos for the month of November where no effort is made.` | `a series of videos for the month of` / `November where no effort is made. And` |
+| `And you know where I never make any effort?` | `you know where I never make any effort?` |
+| `I was right!` | `I was right.` |
+
+Creator transcripts have correct capitalization ("No Effort" vs "Noeffort"), preserve sentence boundaries in segment breaks, and retain original punctuation (exclamation marks vs periods).
+
+**Current gap in Defuddle's track selection:**
+
+The current code at `youtube.ts:230`:
+
+```typescript
+const track = captionTracks.find((t: any) => t.languageCode === 'en')
+    || captionTracks[0];
+```
+
+This uses `find()` which returns the **first** track with `languageCode === 'en'`. For `DAX2_mPr9W8`, that happens to be Track 0 (creator) — so it's **accidentally correct**. But the code has no explicit preference for creator tracks over `kind: "asr"` tracks. If YouTube ever reorders the array (asr first), Defuddle would silently pick the worse transcript.
+
+**Suggested fix:**
+
+```typescript
+const enTracks = captionTracks.filter((t: any) => t.languageCode === 'en');
+const track = enTracks.find((t: any) => t.kind !== 'asr')
+    || enTracks[0]
+    || captionTracks[0];
+```
+
+This explicitly prefers creator-uploaded tracks (no `kind` or `kind !== 'asr'`) over auto-generated ones, then falls back to first English, then first available.
+
+**Other metadata available but not used:**
+
+| Field | Source | Used by Defuddle | Notes |
+|-------|--------|-----------------|-------|
+| Chapters | `/next` API | Yes | Both explicit and auto "Key moments" — solid coverage |
+| `kind` field on tracks | `/player` API | **No** | The gap described above |
+| Tags | Page DOM / schema.org | No | Out of scope for content extraction |
+| Categories | Page DOM | No | Out of scope |
+| Like/view/comment counts | Page DOM | No | Out of scope |
+| Duration | schema.org | No | Could be useful as a template variable |
+
+#### Reproducible examples
+
+##### Using yt-dlp
+
+```bash
+# Install: brew install yt-dlp
+
+# === Video with ONLY auto-captions ===
+VIDEO1="zcwqTkbaZ0o"
+
+# List all available subtitle tracks
+yt-dlp --list-subs "https://www.youtube.com/watch?v=$VIDEO1"
+
+# Dump full metadata as JSON (chapters, counts, description, etc.)
+yt-dlp --dump-json --skip-download "https://www.youtube.com/watch?v=$VIDEO1" \
+  | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+print('Title:', d['title'])
+print('Channel:', d['channel'])
+print('Chapters:', len(d.get('chapters') or []))
+for ch in (d.get('chapters') or []):
+    m, s = divmod(int(ch['start_time']), 60)
+    print(f'  {m}:{s:02d} - {ch[\"title\"]}')
+print('Creator subs:', list((d.get('subtitles') or {}).keys()))
+auto = d.get('automatic_captions') or {}
+print('Auto-caption English variants:', [k for k in auto if k.startswith('en')])
+"
+
+# Download auto-captions in srv3 format (what Defuddle parses)
+yt-dlp --write-auto-sub --sub-lang en --sub-format srv3 \
+  --skip-download -o "/tmp/$VIDEO1" \
+  "https://www.youtube.com/watch?v=$VIDEO1"
+
+# === Video with CREATOR transcript ===
+VIDEO2="DAX2_mPr9W8"
+
+# Download creator transcript
+yt-dlp --write-sub --sub-lang en --sub-format srv3 \
+  --skip-download -o "/tmp/$VIDEO2-creator" \
+  "https://www.youtube.com/watch?v=$VIDEO2"
+
+# Download auto-captions for comparison
+yt-dlp --write-auto-sub --sub-lang en-orig --sub-format srv3 \
+  --skip-download -o "/tmp/$VIDEO2-auto" \
+  "https://www.youtube.com/watch?v=$VIDEO2"
+
+# Compare file sizes (creator transcripts are ~5x smaller — no word-level <s> tags)
+ls -la /tmp/$VIDEO2-creator.en.srv3 /tmp/$VIDEO2-auto.en-orig.srv3
+
+# Diff the first 20 text segments
+diff <(head -30 /tmp/$VIDEO2-creator.en.srv3) <(head -30 /tmp/$VIDEO2-auto.en-orig.srv3)
+```
+
+##### Using the InnerTube API directly (curl)
+
+```bash
+VIDEO_ID="DAX2_mPr9W8"
+
+# Step 1: Get caption track metadata from /player API
+# This is exactly what Defuddle's fetchPlayerData() does
+curl -s 'https://www.youtube.com/youtubei/v1/player?prettyPrint=false' \
+  -H 'Content-Type: application/json' \
+  -H 'User-Agent: com.google.android.youtube/20.10.38 (Linux; U; Android 14)' \
+  -d "{
+    \"context\": {
+      \"client\": {
+        \"clientName\": \"ANDROID\",
+        \"clientVersion\": \"20.10.38\"
+      }
+    },
+    \"videoId\": \"$VIDEO_ID\"
+  }" | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+tracks = d.get('captions', {}).get('playerCaptionsTracklistRenderer', {}).get('captionTracks', [])
+print(f'Caption tracks returned: {len(tracks)}')
+for i, t in enumerate(tracks):
+    print(f'  Track {i}: lang={t.get(\"languageCode\")} kind={t.get(\"kind\", \"(none)\")} vssId={t.get(\"vssId\", \"?\")}')
+    print(f'    baseUrl: {t[\"baseUrl\"][:100]}...')
+"
+
+# Step 2: Get chapters from /next API
+# This is exactly what Defuddle's fetchChapters() does
+curl -s 'https://www.youtube.com/youtubei/v1/next?prettyPrint=false' \
+  -H 'Content-Type: application/json' \
+  -d "{
+    \"context\": {
+      \"client\": {
+        \"clientName\": \"WEB\",
+        \"clientVersion\": \"2.20240101.00.00\"
+      }
+    },
+    \"videoId\": \"$VIDEO_ID\"
+  }" | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+
+# Try player bar chapters (explicit)
+panels = (d.get('playerOverlays', {}).get('playerOverlayRenderer', {})
+  .get('decoratedPlayerBarRenderer', {}).get('decoratedPlayerBarRenderer', {})
+  .get('playerBar', {}).get('multiMarkersPlayerBarRenderer', {}).get('markersMap', []))
+chapters = []
+for panel in panels:
+    for marker in (panel.get('value', {}).get('chapters', [])):
+        ch = marker.get('chapterRenderer', {})
+        title = ch.get('title', {}).get('simpleText', '')
+        start_ms = ch.get('timeRangeStartMillis', 0)
+        if title:
+            chapters.append((start_ms / 1000, title))
+
+# Fall back to engagement panels (auto 'Key moments')
+if not chapters:
+    for panel in (d.get('engagementPanels', [])):
+        content = panel.get('engagementPanelSectionListRenderer', {}).get('content', {})
+        for item in (content.get('macroMarkersListRenderer', {}).get('contents', [])):
+            r = item.get('macroMarkersListItemRenderer', {})
+            title = r.get('title', {}).get('simpleText', '')
+            ts = r.get('timeDescription', {}).get('simpleText', '')
+            if title and ts:
+                chapters.append((ts, title))
+
+print(f'Chapters found: {len(chapters)}')
+for ch in chapters:
+    if isinstance(ch[0], float):
+        m, s = divmod(int(ch[0]), 60)
+        print(f'  {m}:{s:02d} - {ch[1]}')
+    else:
+        print(f'  {ch[0]} - {ch[1]}')
+"
+
+# Step 3: Fetch the actual caption XML
+# Copy a baseUrl from Step 1 output, then:
+# curl -s '<baseUrl>' -H 'User-Agent: Mozilla/5.0' | head -20
+```
+
+##### Using Defuddle programmatically (Node.js)
+
+```typescript
+// npm install defuddle
+// Run with: npx tsx test-transcript.ts
+
+import Defuddle from 'defuddle/node';
+
+async function testVideo(videoId: string) {
+  const url = `https://www.youtube.com/watch?v=${videoId}`;
+
+  // Fetch the YouTube page HTML
+  const resp = await fetch(url, {
+    headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)' }
+  });
+  const html = await resp.text();
+
+  // Parse with Defuddle (async path triggers YouTube extractor)
+  const result = await Defuddle.parseAsync(html, { url });
+
+  console.log(`=== ${videoId} ===`);
+  console.log(`Title: ${result.title}`);
+  console.log(`Author: ${result.author}`);
+  console.log(`Language: ${result.variables?.language}`);
+  console.log(`Has transcript: ${!!result.variables?.transcript}`);
+  console.log(`Transcript length: ${result.variables?.transcript?.length ?? 0} chars`);
+  console.log(`\nFirst 500 chars of transcript:\n${result.variables?.transcript?.slice(0, 500)}`);
+  console.log(`\nFirst 500 chars of content HTML:\n${result.content?.slice(0, 500)}`);
+}
+
+// Auto-captions only
+await testVideo('zcwqTkbaZ0o');
+
+// Creator transcript available
+await testVideo('DAX2_mPr9W8');
+```
+
+##### Using the Defuddle CLI
+
+```bash
+# Install globally or use from the repo
+npm install -g defuddle
+
+# Get markdown output with transcript
+npx defuddle parse "https://www.youtube.com/watch?v=DAX2_mPr9W8" --markdown
+
+# Get JSON output (includes variables.transcript separately)
+npx defuddle parse "https://www.youtube.com/watch?v=DAX2_mPr9W8" --json \
+  | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+print('Title:', d.get('title'))
+print('Author:', d.get('author'))
+v = d.get('variables', {})
+print('Language:', v.get('language'))
+print('Transcript preview:', v.get('transcript', '')[:300])
+"
+```
