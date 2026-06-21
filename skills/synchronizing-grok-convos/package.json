@@ -1,0 +1,18 @@
+{
+  "name": "synchronizing-grok-convos",
+  "version": "0.2.0",
+  "description": "Global sync of private Grok conversations from grok.com and x.com into Obsidian. CLI binary is `ggs`. Playwright discovery + Defuddle + 6-stream maximizer.",
+  "type": "module",
+  "scripts": {
+    "build": "bun build ./bin/ggs.ts --compile --outfile bin/ggs",
+    "dev": "bun run bin/ggs.ts",
+    "build:raw": "bun build ./bin/ggs.ts --outfile bin/ggs.js"
+  },
+  "dependencies": {
+    "chromium-bidi": "^16.0.1",
+    "playwright": "^1.44.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "general_settings": {
+    "betaFeatures": false,
+    "legacyMode": false,
+    "openBehavior": "popup",
+    "saveBehavior": "addToObsidian",
+    "showMoreActionsButton": false,
+    "silentOpen": true
+  },
+  "highlighter_settings": {
+    "alwaysShowHighlights": true,
+    "highlightBehavior": "highlight-inline",
+    "highlighterEnabled": true
+  },
+  "interpreter_settings": {
+    "defaultPromptContext": "",
+    "interpreterAutoRun": false,
+    "interpreterEnabled": false,
+    "interpreterModel": "",
+    "models": [],
+    "providers": []
+  },
+  "migrationVersion": 1,
+  "property_types": [
+    { "name": "title", "type": "text" },
+    { "name": "source", "type": "text" },
+    { "defaultValue": "{{author|split:\", \"|wikilink|join}}", "name": "author", "type": "multitext" },
+    { "name": "published", "type": "date" },
+    { "defaultValue": "{{date}}", "name": "created", "type": "date" },
+    { "name": "description", "type": "text" },
+    { "name": "tags", "type": "multitext" },
+    { "name": "url", "type": "text" },
+    { "name": "type", "type": "text" },
+    { "name": "status", "type": "text" },
+    { "name": "word_count", "type": "text" },
+    { "name": "id", "type": "text" },
+    { "name": "surface", "type": "text" }
+  ],
+  "reader_settings": {
+    "appearance": "auto",
+    "autoScroll": true,
+    "blendImages": true,
+    "colorLinks": false,
+    "customCss": "",
+    "darkTheme": "same",
+    "defaultFont": "",
+    "followLinks": true,
+    "fontSize": 11,
+    "fonts": [],
+    "highlightActiveLine": true,
+    "lightTheme": "default",
+    "lineHeight": 1.6,
+    "maxWidth": 55,
+    "pinPlayer": true
+  },
+  "stats": {
+    "addToObsidian": 0,
+    "copyToClipboard": 0,
+    "saveFile": 0,
+    "share": 0
+  },
+  "template_grok_convo": {
+    "id": "grok_convo",
+    "name": "Grok Conversation",
+    "behavior": "create",
+    "noteNameFormat": "{{url|replace:\".*conversation=\",\"\"|kebab|replace:\"/--+/g\":\"-\"|replace:\"/^-+|-+$/g\":\"\"|slice:0,80}}",
+    "path": "GenAI/Grok/chats",
+    "noteContentFormat": "---\ntitle: \"{{title}}\"\nid: \"{{url|replace:\".*conversation=\",\"\"}}\"\nsource: \"{{url|replace:\"/[?&]utm_[^&]*/g\":\"\"}}\"\nsurface: \"{% if url contains 'x.com' %}x.com{% else %}grok.com{% endif %}\"\ncaptured: \"{{date}}\"\nword_count: \"{{words}}\"\nstatus: \"to-be-reviewed\"\ntype: \"grok-conversation\"\ntags: [grok, chat]\n---\n\n# {{title}}\n\nSource: [{{url|replace:\"/[?&]utm_[^&]*/g\":\"\"}}]({{url|replace:\"/[?&]utm_[^&]*/g\":\"\"}})\nSurface: {% if url contains 'x.com' %}x.com{% else %}grok.com{% endif %}\n\n## User Prompts\n\n{{content}}\n\n## Grok Replies\n\n{{content}}\n\n## Grok X Sources\n\n{{content}}\n\n## Grok Web Sources\n\n{{content}}\n\n## Grok Thinking / Reasoning\n\n{{content}}\n\n## Tool Calls & Hooks\n\n{{content}}\n\n---\n\n## Clean Defuddled Version (reference)\n\n{{content}}\n\n---\n\nCaptured [[journals/{{date|date:\"YYYY\"}}/{{date|date:\"MMMM\"}}/{{date|date:\"DD-MMM-YYYY\"}}|{{date|date:\"DD-MMM-YYYY\"}}]]\n\n[Source]({{url|replace:\"/[?&]utm_[^&]*/g\":\"\"}})",
+    "properties": [
+      {
+        "id": "grok_title",
+        "name": "title",
+        "value": "{{title}}",
+        "type": "text"
+      },
+      {
+        "id": "grok_id",
+        "name": "id",
+        "value": "{{url|replace:\".*conversation=\",\"\"}}",
+        "type": "text"
+      },
+      {
+        "id": "grok_source",
+        "name": "source",
+        "value": "{{url|replace:\"/[?&]utm_[^&]*/g\":\"\"}}",
+        "type": "text"
+      },
+      {
+        "id": "grok_surface",
+        "name": "surface",
+        "value": "{% if url contains 'x.com' %}x.com{% else %}grok.com{% endif %}",
+        "type": "text"
+      },
+      {
+        "id": "grok_created",
+        "name": "created",
+        "value": "{{date}}",
+        "type": "date"
+      },
+      {
+        "id": "grok_word_count",
+        "name": "word_count",
+        "value": "{{words}}",
+        "type": "text"
+      },
+      {
+        "id": "grok_status",
+        "name": "status",
+        "value": "to-be-reviewed",
+        "type": "text"
+      },
+      {
+        "id": "grok_type",
+        "name": "type",
+        "value": "grok-conversation",
+        "type": "text"
+      },
+      {
+        "id": "grok_tags",
+        "name": "tags",
+        "value": "grok,chat",
+        "type": "multitext"
+      }
+    ],
+    "triggers": [
+      "grok.com",
+      "x.com/i/grok",
+      "x.com/i/grok?conversation="
+    ],
+    "context": ""
+  }
+}
