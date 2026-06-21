@@ -61,9 +61,17 @@ The system is broken into these clear components (aligned with the sequence diag
    - Responsibilities:
      - Deduplication across the entire conversation.
      - Classification / splitting into the 6 targets (see below).
-     - Building Obsidian-native output (frontmatter + headed sections).
+     - Building Obsidian-native output as a **linear conversational transcript**:
+       - Single `## Conversation` section with alternating `### User` / `### Grok` turns (visible in outline).
+       - At the end, the non-conversation streams as their own top-level H2 sections:
+         - ## Grok X Sources
+         - ## Grok Web Sources
+         - ## Grok Thinking / Reasoning
+         - ## Tool Calls & Hooks
+     (X Sources and Web Sources placed before Thinking / Reasoning)
+     - Content is partitioned with zero duplication. The conversation flow is preserved so the outline shows the back-and-forth.
      - Applying curation rules (kebab naming if desired, status, journal links in future, etc.).
-   - Output: Structured `SixStreams` + final Markdown content.
+   - Output: Structured turns + final Markdown content.
 
 6. **Persistence**
    - `.grok-sync-index.json` lives inside the `--target` folder.
@@ -94,8 +102,9 @@ Defuddle Layer (npx defuddle parse --markdown --json)
           |   → cleanMarkdown + wordCount + meta
           v
 Maximizer (Defuddled content + raw HTML + hints)
-          |   → 6 streams (deduped + classified)
-          |   → Obsidian frontmatter + sections
+          |   → Chronological turns (User / Grok alternating)
+          |   → Nested sub-streams under Grok turns
+          |   → Obsidian frontmatter + linear transcript
           v
 Write .md to target
 Update .grok-sync-index.json

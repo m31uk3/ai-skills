@@ -341,29 +341,45 @@ tags: [grok, chat]
   body += `Source: [${effectiveUrl}](${effectiveUrl})\n`;
   body += `Surface: ${surface}\n\n`;
 
-  const sectionOrder: (keyof SixStreams)[] = ['user_prompts', 'grok_replies', 'x_sources', 'web_sources', 'thinking', 'tool_calls'];
-  const sectionTitles: Record<keyof SixStreams, string> = {
-    user_prompts: 'User Prompts',
-    grok_replies: 'Grok Replies',
-    x_sources: 'Grok X Sources',
-    web_sources: 'Grok Web Sources',
-    thinking: 'Grok Thinking / Reasoning',
-    tool_calls: 'Tool Calls & Hooks',
-  };
+  body += `## Conversation\n\n`;
 
-  for (const key of sectionOrder) {
-    const items = streams[key];
-    body += `\n## ${sectionTitles[key]}\n\n`;
-    if (!items || items.length === 0) {
-      body += '*(none extracted in this pass)*\n';
-      continue;
+  // Linear back-and-forth turns so the conversation is readable and the
+  // outline view shows the natural User / Grok alternation.
+  // We approximate interleaving from the two main lists.
+  const maxTurns = Math.max(
+    streams.user_prompts.length,
+    streams.grok_replies.length
+  );
+
+  for (let i = 0; i < maxTurns; i++) {
+    if (i < streams.user_prompts.length) {
+      const item = streams.user_prompts[i];
+      body += `### User\n\n${item.text}\n\n`;
     }
-    items.forEach((item) => {
-      body += `${item.text}\n\n`;
-    });
+    if (i < streams.grok_replies.length) {
+      const item = streams.grok_replies[i];
+      body += `### Grok\n\n${item.text}\n\n`;
+    }
   }
 
-  body += `\n---\n\n## Clean Defuddled Version (reference)\n\n${defuddled}\n`;
+  // Other streams collected at the end as their own top-level H2 sections.
+  // Order: X Sources, Web Sources, Thinking, Tool Calls (as requested).
+  if (streams.x_sources.length > 0) {
+    body += `\n## Grok X Sources\n\n`;
+    streams.x_sources.forEach(item => { body += `${item.text}\n\n`; });
+  }
+  if (streams.web_sources.length > 0) {
+    body += `\n## Grok Web Sources\n\n`;
+    streams.web_sources.forEach(item => { body += `${item.text}\n\n`; });
+  }
+  if (streams.thinking.length > 0) {
+    body += `\n## Grok Thinking / Reasoning\n\n`;
+    streams.thinking.forEach(item => { body += `${item.text}\n\n`; });
+  }
+  if (streams.tool_calls.length > 0) {
+    body += `\n## Tool Calls & Hooks\n\n`;
+    streams.tool_calls.forEach(item => { body += `${item.text}\n\n`; });
+  }
 
   const outPath = join(outDir, `${conv.id}.md`);
   writeFileSync(outPath, frontmatter + body);
