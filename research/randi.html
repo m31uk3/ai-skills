@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Number • SPA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .title-font {
+            font-family: 'Space Grotesk', system_ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        .number-display {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                        opacity 0.2s ease;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .number-display.pop {
+            animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0.6) rotate(-8deg);
+                opacity: 0;
+            }
+            70% {
+                transform: scale(1.1) rotate(3deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+            }
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-white">
+    <div class="min-h-screen flex items-center justify-center p-6">
+        <div class="w-full max-w-md">
+            
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-zinc-900 rounded-2xl mb-4 shadow-inner">
+                    <i class="fa-solid fa-dice text-4xl text-emerald-400"></i>
+                </div>
+                <h1 class="title-font text-5xl font-semibold tracking-tighter">Random</h1>
+                <p class="text-zinc-400 mt-1 text-lg">Numbers between 1 and 10</p>
+            </div>
+
+            <!-- Main Card -->
+            <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl">
+                
+                <!-- Number Display -->
+                <div class="flex justify-center mb-8">
+                    <div class="relative">
+                        <div id="number-display"
+                             class="number-display w-56 h-56 flex items-center justify-center text-[120px] font-bold text-white bg-zinc-950 border border-zinc-700 rounded-[3rem] shadow-inner select-none">
+                            7
+                        </div>
+                        <!-- Subtle glow effect -->
+                        <div class="absolute inset-0 rounded-[3rem] bg-emerald-500/10 blur-3xl -z-10"></div>
+                    </div>
+                </div>
+
+                <!-- Generate Button -->
+                <button onclick="generateNumber()"
+                        class="w-full group flex items-center justify-center gap-x-3 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 transition-all text-white font-semibold text-xl py-4 rounded-2xl shadow-lg active:scale-[0.985]">
+                    <i class="fa-solid fa-sync-alt group-active:rotate-180 transition-transform"></i>
+                    <span>Generate New Number</span>
+                </button>
+
+                <!-- Footer info -->
+                <div class="flex items-center justify-center gap-x-2 mt-6 text-sm text-zinc-500">
+                    <div class="flex items-center gap-x-1.5">
+                        <i class="fa-solid fa-info-circle"></i>
+                        <span>1 — 10</span>
+                    </div>
+                    <div class="w-px h-3 bg-zinc-700"></div>
+                    <span>Instant • No reloads</span>
+                </div>
+            </div>
+
+            <!-- Extra nice touch -->
+            <div class="text-center mt-6 text-xs text-zinc-500">
+                Press <span class="font-mono bg-zinc-900 px-1.5 py-0.5 rounded">Space</span> to generate
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        // Tailwind script
+        function initializeTailwind() {
+            document.documentElement.style.setProperty('--accent', '#10b981');
+        }
+
+        // Generate random number with nice animation
+        function generateNumber() {
+            const display = document.getElementById('number-display');
+            
+            // Start animation
+            display.style.transition = 'none';
+            display.style.transform = 'scale(0.7) rotate(-12deg)';
+            display.style.opacity = '0.3';
+
+            // Force reflow
+            void display.offsetWidth;
+
+            setTimeout(() => {
+                // Generate new number
+                const newNumber = Math.floor(Math.random() * 10) + 1;
+                display.textContent = newNumber;
+
+                // Reset and animate in
+                display.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease';
+                display.style.transform = 'scale(1) rotate(0deg)';
+                display.style.opacity = '1';
+
+                // Optional: add a quick "pop" class for extra flair
+                display.classList.add('pop');
+                setTimeout(() => {
+                    display.classList.remove('pop');
+                }, 400);
+            }, 180);
+        }
+
+        // Keyboard support (Space key)
+        function setupKeyboardControls() {
+            document.addEventListener('keydown', function(e) {
+                if (e.key === ' ' || e.key === 'Spacebar') {
+                    e.preventDefault();
+                    generateNumber();
+                }
+            });
+        }
+
+        // Initialize everything
+        function init() {
+            initializeTailwind();
+            setupKeyboardControls();
+
+            const display = document.getElementById('number-display');
+            
+            // Set initial random number
+            const initialNumber = Math.floor(Math.random() * 10) + 1;
+            display.textContent = initialNumber;
+
+            // Optional: subtle entrance animation on load
+            setTimeout(() => {
+                display.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                display.style.transform = 'scale(1)';
+            }, 100);
+        }
+
+        // Start the app
+        window.onload = init;
+    </script>
+</body>
+</html>
