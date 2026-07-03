@@ -19,7 +19,10 @@ bun build ./bin/ggs.ts --compile --outfile bin/ggs
 # One convo
 ./bin/ggs "https://x.com/i/grok?conversation=2068028429640024253" --headed
 
-# Global sync
+# Titles list only (fast, no full content)
+./bin/ggs --list --target ~/path/to/vault
+
+# Global sync (full extraction + updates the titles index)
 ./bin/ggs --sync --headed
 ```
 

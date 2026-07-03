@@ -60,7 +60,7 @@ const DEFAULT_TARGET = join(homedir(), '.grok', 'conversations');
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  const options: any = { target: null, sync: false, headed: false };
+  const options: any = { target: null, sync: false, headed: false, list: false };
   let session: string | null = null;
 
   for (let i = 0; i < args.length; i++) {
@@ -69,6 +69,7 @@ function parseArgs() {
     else if (a === '--sync') options.sync = true;
     else if (a === '--headed') options.headed = true;
     else if (a === '--html') options.html = args[++i];
+    else if (a === '--list' || a === '--list-titles' || a === '--titles') options.list = true;
     else if (!a.startsWith('--')) session = a;
   }
   return { options, session };
@@ -95,27 +96,71 @@ function detectSurface(url: string): 'grok.com' | 'x.com' {
 
 async function discoverConversations(ctx: BrowserContext): Promise<ConvMeta[]> {
   const page = await ctx.newPage();
-  const urlsToCheck = ['https://grok.com', 'https://x.com/i/grok'];
   const all: ConvMeta[] = [];
 
-  for (const base of urlsToCheck) {
-    try {
-      // Use domcontentloaded + manual wait - networkidle times out too easily on x.com
-      await page.goto(base, { waitUntil: 'domcontentloaded', timeout: 45000 });
-      await page.waitForTimeout(2000);
+  const bases: Array<{ url: string; surface: 'grok.com' | 'x.com' }> = [
+    { url: 'https://x.com/i/grok', surface: 'x.com' },
+    { url: 'https://grok.com', surface: 'grok.com' },
+  ];
 
-      // Scroll to load history (tunable)
-      for (let s = 0; s < 12; s++) {
-        await page.evaluate(() => window.scrollBy(0, 900));
-        await page.waitForTimeout(550);
+  for (const base of bases) {
+    try {
+      await page.goto(base.url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page.waitForTimeout(3500);
+
+      if (base.surface === 'x.com') {
+        // Reveal history list (critical for current x.com/grok UI)
+        try {
+          const hist = page.getByText(/History/i);
+          if (await hist.count() > 0) {
+            await hist.first().click({ timeout: 4000 });
+            await page.waitForTimeout(2200);
+          }
+        } catch {}
       }
 
-      const links = await page.$$eval('a[href*="/c/"], a[href*="/chat/"], a[href*="conversation="]', (els) =>
+      // Scroll tall scrollable containers (the real history sidebar)
+      await page.evaluate(async () => {
+        let containers = Array.from(document.querySelectorAll('div, aside, section, nav'))
+          .filter((el: any) => {
+            const cs = window.getComputedStyle(el);
+            return (cs.overflowY === 'auto' || cs.overflowY === 'scroll') && el.scrollHeight > 300;
+          }) as HTMLElement[];
+        // Prefer containers that already have conversation links
+        const withLinks = containers.filter(c => c.querySelector('a[href*="conversation="]'));
+        if (withLinks.length) containers = withLinks;
+        for (const c of containers.slice(0, 5)) {
+          for (let i = 0; i < 30; i++) {
+            c.scrollTop = c.scrollHeight;
+            await new Promise(r => setTimeout(r, 160));
+          }
+        }
+      });
+      await page.waitForTimeout(1400);
+
+      // Fallback window scroll
+      for (let s = 0; s < 18; s++) {
+        await page.evaluate(() => window.scrollBy(0, 850));
+        await page.waitForTimeout(180);
+      }
+
+      // Primary: x.com style ?conversation= links with good titles in text
+      let links = await page.$$eval('a[href*="conversation="]', (els: any[]) =>
         els.map((el) => ({
-          url: (el as HTMLAnchorElement).href,
-          title: el.textContent?.trim() || 'untitled',
+          url: el.href as string,
+          title: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 160) || 'Untitled',
         }))
       );
+
+      // Also support classic /c/ and /chat/ on grok.com
+      if (links.length === 0) {
+        links = await page.$$eval('a[href*="/c/"], a[href*="/chat/"]', (els: any[]) =>
+          els.map((el) => ({
+            url: el.href as string,
+            title: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 160) || 'Untitled',
+          }))
+        );
+      }
 
       for (const l of links) {
         let id = '';
@@ -125,11 +170,12 @@ async function discoverConversations(ctx: BrowserContext): Promise<ConvMeta[]> {
         else if (convMatch) id = convMatch[1];
 
         if (id) {
-          all.push({ id, url: l.url, title: l.title });
+          const title = l.title && l.title.length > 2 ? l.title : 'Untitled';
+          all.push({ id, url: l.url, title });
         }
       }
     } catch (e) {
-      console.warn(`Could not discover on ${base}:`, (e as Error).message);
+      console.warn(`Could not discover on ${base.url}:`, (e as Error).message);
     }
   }
 
@@ -500,10 +546,41 @@ function saveLocalIndex(target: string, index: LocalIndex) {
   writeFileSync(idxPath, JSON.stringify(index, null, 2));
 }
 
+function writeTitlesIndex(target: string, convos: ConvMeta[]) {
+  mkdirSync(target, { recursive: true });
+  const idxPath = join(target, 'grok-conversations-index.md');
+  const sorted = [...convos].sort((a, b) => (b.id > a.id ? 1 : -1));
+  const fm = `---
+title: "Grok Conversations Index"
+type: grok-index
+captured: "${new Date().toISOString()}"
+count: ${convos.length}
+status: "to-be-reviewed"
+---
+`;
+  let body = `# Grok Conversations Index\n\n**Total:** ${convos.length}\n\nClean list of titles from x.com + grok.com. Use \`ggs --sync --target <path>\` for full content.\n\n## Titles\n\n`;
+  for (const c of sorted) {
+    const t = c.title.replace(/"/g, '\\"');
+    body += `- **${t}** — \`${c.id}\`  \n  [open](${c.url}) | surface: ${detectSurface(c.url)}\n\n`;
+  }
+  writeFileSync(idxPath, fm + body);
+  console.log(`Wrote titles index: ${idxPath} (${convos.length} convos)`);
+}
+
 async function main() {
   const { options, session } = parseArgs();
   const target = getTarget(options);
   mkdirSync(target, { recursive: true });
+
+  if (options.list) {
+    console.log('Discovering conversations for titles list...');
+    const ctx = await getBrowserContext(options.headed);
+    const remote = await discoverConversations(ctx);
+    await ctx.close();
+    writeTitlesIndex(target, remote);
+    console.log(`List complete. See ${join(target, 'grok-conversations-index.md')}`);
+    return;
+  }
 
   const index = await loadLocalIndex(target);
 
@@ -511,6 +588,9 @@ async function main() {
     console.log('Discovering conversations across grok.com + x.com (scrolling history)...');
     const ctx = await getBrowserContext(options.headed);
     const remote = await discoverConversations(ctx);
+
+    // Always (re)write fresh titles index on sync
+    writeTitlesIndex(target, remote);
 
     let processed = 0;
     for (const conv of remote) {
