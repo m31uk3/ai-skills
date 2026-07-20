@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- __artifactory_state_bridge__ -->
+<script>(function(){var ATTR="data-artifactory-state-key",BY="data-artifactory-state-by",AT="data-artifactory-state-at",SCOPE="data-artifactory-state-scope",ANON="data-artifactory-state-anon",TTL="data-artifactory-state-ttl",POLL="data-artifactory-state-poll",ROSTER="data-artifactory-state-roster",SHOW="data-artifactory-state-show";var values={},meta={},aggs={},canWrite=false,canInteract=false,myAlias=null,ready=false,timers={};function post(msg){try{parent.postMessage(msg,"*");}catch(_){}}function keyed(){return document.querySelectorAll("["+ATTR+"]");}function perUser(el){return (el.getAttribute(SCOPE)||"").toLowerCase()==="per-user";}function isAnon(el){return el.hasAttribute(ANON);}function kind(el){var tag=el.tagName,t=(el.getAttribute("type")||"").toLowerCase();if(tag==="INPUT"&&t==="checkbox")return "bool";if(tag==="INPUT"&&t==="radio")return "radio";if(tag==="INPUT"&&(t==="number"||t==="range"))return "number";if(tag==="SELECT")return "select";if(tag==="TEXTAREA")return "text";if(tag==="INPUT")return "text";return "other";}function fire(el){try{el.dispatchEvent(new Event("input",{bubbles:true}));el.dispatchEvent(new Event("change",{bubbles:true}));}catch(_){}}function applyTo(el,val){var k=kind(el);if(k==="bool"){el.checked=(val==="true");fire(el);}else if(k==="radio"){el.checked=(el.value===val);fire(el);}else if(k==="select"||k==="text"||k==="number"){el.value=(val==null?"":val);fire(el);}else{el.setAttribute("data-artifactory-state-value",val==null?"":val);}}function readFrom(el){var k=kind(el);if(k==="bool")return {valueType:"BOOL",value:el.checked?"true":"false"};if(k==="number")return {valueType:"NUMBER",value:(el.value!=null?String(el.value):"")};return {valueType:"STRING",value:(el.value!=null?String(el.value):"")};}function writable(el){return perUser(el)?canInteract:canWrite;}function setDisabled(){var ns=keyed();for(var i=0;i<ns.length;i++){var el=ns[i];if(!writable(el)){if(!el.hasAttribute("disabled")){el.setAttribute("disabled","");el.setAttribute("data-afy-disabled","");}}else if(el.hasAttribute("data-afy-disabled")){el.removeAttribute("disabled");el.removeAttribute("data-afy-disabled");}}}function isSet(key){var el=document.querySelector("["+ATTR+"=\""+(window.CSS&&CSS.escape?CSS.escape(key):key)+"\"]");var v=values[key];if(el&&kind(el)==="bool")return v==="true";return v!=null&&v!=="";}function attribution(){var bs=document.querySelectorAll("["+BY+"]");for(var i=0;i<bs.length;i++){var be=bs[i];if(be.hasAttribute(ATTR))continue;var k=be.getAttribute(BY);if(!k)continue;var mb=meta[k];be.textContent=(isSet(k)&&mb&&mb.by)?mb.by:"";}var as=document.querySelectorAll("["+AT+"]");for(var j=0;j<as.length;j++){var ae=as[j];if(ae.hasAttribute(ATTR))continue;var ak=ae.getAttribute(AT);if(!ak)continue;var ma=meta[ak],iso=(isSet(ak)&&ma&&ma.at)?ma.at:"";ae.textContent=iso?iso.slice(0,10):"";if(iso){ae.setAttribute("title",iso);if(ae.tagName==="TIME")ae.setAttribute("datetime",iso);}else{ae.removeAttribute("title");if(ae.tagName==="TIME")ae.removeAttribute("datetime");}}}function esc(s){var d=document.createElement("div");d.textContent=s==null?"":String(s);return d.innerHTML;}function polls(){var ps=document.querySelectorAll("["+POLL+"]");for(var i=0;i<ps.length;i++){var el=ps[i],a=aggs[el.getAttribute(POLL)];if(!a){el.textContent="";continue;}var dist=a.distribution||{},total=(+a.totalCount||0),html="";for(var v in dist){if(!Object.prototype.hasOwnProperty.call(dist,v))continue;var c=(+dist[v]||0),pct=total>0?Math.round(c*100/total):0;html+="<div class=\"afy-poll-row\" style=\"display:flex;align-items:center;gap:8px;margin:4px 0\">"+"<span class=\"afy-poll-label\" style=\"min-width:8ch\">"+esc(v)+"</span>"+"<span class=\"afy-poll-bar\" style=\"flex:1;height:10px;background:rgba(0,0,0,0.08);border-radius:5px;overflow:hidden\">"+"<span style=\"display:block;height:100%;width:"+pct+"%;background:currentColor;opacity:0.55\"></span></span>"+"<span class=\"afy-poll-count\">"+c+" ("+pct+"%)</span></div>";}html+="<div class=\"afy-poll-total\" style=\"opacity:0.7;font-size:0.85em;margin-top:4px\">"+total+" total</div>";el.innerHTML=html;}}function rosters(){var rs=document.querySelectorAll("["+ROSTER+"]");for(var i=0;i<rs.length;i++){var el=rs[i],a=aggs[el.getAttribute(ROSTER)];if(!a){el.textContent="";continue;}var ents=a.entries,html="";if(ents&&ents.length){for(var j=0;j<ents.length;j++){var e=ents[j];html+="<div class=\"afy-roster-row\" style=\"display:flex;gap:8px;margin:3px 0\">"+"<span class=\"afy-roster-alias\">"+esc(e.alias)+"</span>"+(e.value!=="true"?"<span class=\"afy-roster-value\" style=\"opacity:0.7\">"+esc(e.value)+"</span>":"")+"</div>";}}else{html="<div class=\"afy-roster-count\">"+(+a.totalCount||0)+(a.anonymous?" (anonymous)":"")+"</div>";}el.innerHTML=html;}}function shows(){var ss=document.querySelectorAll("["+SHOW+"]");for(var i=0;i<ss.length;i++){var se=ss[i];if(se.hasAttribute(ATTR))continue;var k=se.getAttribute(SHOW);if(!k)continue;var v=Object.prototype.hasOwnProperty.call(values,k)?values[k]:null;var sv=(v==null?"":String(v));se.setAttribute("data-afy-state-value",sv);var num=parseFloat(sv);se.style.setProperty("--afy-state",isNaN(num)?"0":String(num));if(!se.firstElementChild)se.textContent=sv;}}function hydrate(){var ns=keyed();for(var i=0;i<ns.length;i++){var el=ns[i],k=el.getAttribute(ATTR);if(perUser(el)){var a=aggs[k];if(a&&a.myValue!=null)applyTo(el,a.myValue);}else if(Object.prototype.hasOwnProperty.call(values,k))applyTo(el,values[k]);}setDisabled();attribution();polls();rosters();shows();}function send(el){var k=el.getAttribute(ATTR);if(!k)return;var rd=readFrom(el);var msg={type:"artifactory-state-change",stateKey:k,valueType:rd.valueType,value:rd.value};if(perUser(el)){msg.scope="PER_USER";msg.anon=isAnon(el);var ttl=parseInt(el.getAttribute(TTL),10);if(!isNaN(ttl)&&ttl>0)msg.ttlSeconds=ttl;}values[k]=rd.value;if(myAlias&&!isAnon(el))meta[k]={by:myAlias,at:new Date().toISOString()};attribution();shows();post(msg);}document.addEventListener("change",function(e){if(!e.isTrusted)return;var el=e.target;if(!el||!el.getAttribute||!el.getAttribute(ATTR))return;if(!writable(el)||kind(el)==="text")return;send(el);},true);document.addEventListener("input",function(e){if(!e.isTrusted)return;var el=e.target;if(!el||!el.getAttribute||!el.getAttribute(ATTR))return;if(!writable(el)||kind(el)!=="text")return;var key=el.getAttribute(ATTR);clearTimeout(timers[key]);timers[key]=setTimeout(function(){send(el);},600);},true);window.addEventListener("message",function(e){var d=e.data;if(!d)return;if(d.type==="artifactory-state-init"){canWrite=!!d.canWrite;canInteract=!!d.canInteract;myAlias=d.myAlias||null;values={};meta={};aggs={};var es=d.entries||[];for(var i=0;i<es.length;i++){var en=es[i];if(en&&en.stateKey!=null){values[en.stateKey]=en.value;meta[en.stateKey]={by:en.updatedBy,at:en.updatedAt};}}var gs=d.aggregates||[];for(var j=0;j<gs.length;j++){var g=gs[j];if(g&&g.stateKey!=null){aggs[g.stateKey]=g;if(myAlias&&g.entries&&g.entries.length){for(var ei=0;ei<g.entries.length;ei++){var pe=g.entries[ei];if(pe&&pe.alias===myAlias){values[g.stateKey]=pe.value;meta[g.stateKey]={by:pe.alias,at:pe.updatedAt};break;}}}}}hydrate();}else if(d.type==="artifactory-state-update"){if(d.stateKey!=null){values[d.stateKey]=d.value;var ag=aggs[d.stateKey];if((d.updatedBy!=null||d.updatedAt!=null)&&!(ag&&ag.anonymous))meta[d.stateKey]={by:d.updatedBy,at:d.updatedAt};var ns=keyed();for(var k=0;k<ns.length;k++){if(ns[k].getAttribute(ATTR)===d.stateKey&&!perUser(ns[k])&&ns[k]!==document.activeElement)applyTo(ns[k],d.value);}attribution();shows();}}});function announce(){if(ready)return;ready=true;post({type:"artifactory-state-ready"});}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",announce);else announce();})();</script>
+<!-- __artifactory_comment_bridge__ -->
+<script>(function(){var CTX=48,OV="__artifactory_comment_overlay";var anchors=[],activeId=null,mode=false,ranges={},rT=0;function root(){return document.body||document.documentElement;}function skip(n){var p=n.parentNode;while(p){var t=p.nodeName;if(t==="SCRIPT"||t==="STYLE"||t==="NOSCRIPT")return true;p=p.parentNode;}return false;}function map(){var w=document.createTreeWalker(root(),NodeFilter.SHOW_TEXT,{acceptNode:function(n){return skip(n)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT;}}),ns=[],t="",n;while((n=w.nextNode())){ns.push({node:n,start:t.length});t+=n.data;}return {text:t,nodes:ns};}function p2o(node,off){var r=document.createRange();r.setStart(root(),0);try{r.setEnd(node,off);}catch(e){return -1;}return r.toString().length;}function o2p(m,o){for(var i=0;i<m.nodes.length;i++){var e=m.nodes[i],end=e.start+e.node.data.length;if(o<=end)return {node:e.node,offset:Math.max(0,o-e.start)};}var l=m.nodes[m.nodes.length-1];return l?{node:l.node,offset:l.node.data.length}:null;}function rng(m,s,e){var a=o2p(m,s),b=o2p(m,e);if(!a||!b)return null;var r=document.createRange();try{r.setStart(a.node,a.offset);r.setEnd(b.node,b.offset);}catch(_){return null;}return r;}function post(msg){try{parent.postMessage(msg,"*");}catch(_){}}function csuf(a,b){var i=0;while(i<a.length&&i<b.length&&a[a.length-1-i]===b[b.length-1-i])i++;return i;}function cpre(a,b){var i=0;while(i<a.length&&i<b.length&&a[i]===b[i])i++;return i;}function qre(q){var e=q.replace(/[.*+?^${}()|[\]\\]/g,"\\<head>").replace(/\s+/g,"\\s+");return new RegExp(e,"g");}function findIdx(t,an){if(t.slice(an.startOffset,an.endOffset)===an.quote)return {i:an.startOffset,l:an.quote.length};var re=qre(an.quote),m,best=null,bs=-1e9;while((m=re.exec(t))!==null){var idx=m.index,len=m[0].length;var bef=t.slice(Math.max(0,idx-CTX),idx),aft=t.slice(idx+len,idx+len+CTX);var sc=csuf(an.prefix||"",bef)+cpre(an.suffix||"",aft)-Math.abs(idx-an.startOffset)/100;if(sc>bs){bs=sc;best={i:idx,l:len};}if(len===0)re.lastIndex++;}return best;}function build(){ranges={};var m=map();for(var i=0;i<anchors.length;i++){var a=anchors[i];if(!a.anchor)continue;var f=findIdx(m.text,a.anchor);if(!f)continue;var r=rng(m,f.i,f.i+f.l);if(r)ranges[a.commentId]=r;}}function overlayEl(){var o=document.getElementById(OV);if(!o){o=document.createElement("div");o.id=OV;o.style.cssText="position:absolute;top:0;left:0;width:0;height:0;pointer-events:none;z-index:2147483646;";(document.body||document.documentElement).appendChild(o);}return o;}function draw(){var o=overlayEl();o.textContent="";if(!mode)return;var sx=window.pageXOffset||0,sy=window.pageYOffset||0;for(var id in ranges){var rs=ranges[id].getClientRects();var col=(id===activeId)?"rgba(255,153,0,0.40)":"rgba(0,176,255,0.22)";for(var j=0;j<rs.length;j++){var rc=rs[j];if(rc.width<=0||rc.height<=0)continue;var d=document.createElement("div");d.style.cssText="position:absolute;border-radius:2px;left:"+(rc.left+sx)+"px;top:"+(rc.top+sy)+"px;width:"+rc.width+"px;height:"+rc.height+"px;background:"+col+";";o.appendChild(d);}}}window.addEventListener("resize",function(){clearTimeout(rT);rT=setTimeout(draw,150);});function postLocated(){if(!mode)return;var loc=[],orph=[];for(var i=0;i<anchors.length;i++){var a=anchors[i];if(!a.anchor)continue;(ranges[a.commentId]?loc:orph).push(a.commentId);}post({type:"artifactory-comment-located",located:loc,orphaned:orph});}function rerender(){build();draw();postLocated();}var mo=null,moT=0;function startObs(){if(mo||!window.MutationObserver)return;mo=new MutationObserver(function(){if(!mode)return;clearTimeout(moT);moT=setTimeout(rerender,300);});try{mo.observe(root(),{childList:true,subtree:true,characterData:true});}catch(_){}}function stopObs(){if(mo){try{mo.disconnect();}catch(_){}mo=null;}}function onSel(){if(!mode)return;var s=window.getSelection();if(!s||s.rangeCount===0||s.isCollapsed)return;var rg=s.getRangeAt(0);if(!root().contains(rg.commonAncestorContainer))return;var m=map();var a=p2o(rg.startContainer,rg.startOffset),b=p2o(rg.endContainer,rg.endOffset);if(a<0||b<0||b<=a)return;var q=m.text.slice(a,b);if(!q.trim())return;post({type:"artifactory-comment-selection",anchor:{quote:q,prefix:m.text.slice(Math.max(0,a-CTX),a),suffix:m.text.slice(b,b+CTX),startOffset:a,endOffset:b}});}document.addEventListener("mouseup",function(){setTimeout(onSel,0);},true);document.addEventListener("click",function(e){if(!mode)return;var s=window.getSelection();if(s&&!s.isCollapsed)return;var x=e.clientX,y=e.clientY,hit=null;for(var id in ranges){var rs=ranges[id].getClientRects();for(var j=0;j<rs.length;j++){var rc=rs[j];if(x>=rc.left&&x<=rc.right&&y>=rc.top&&y<=rc.bottom){hit=id;break;}}if(hit)break;}if(hit){e.preventDefault();e.stopPropagation();post({type:"artifactory-comment-click",commentId:hit});}},true);window.addEventListener("message",function(e){var d=e.data;if(!d)return;if(d.type==="artifactory-comment-highlights"){anchors=d.anchors||[];activeId=d.activeId||null;rerender();}else if(d.type==="artifactory-comment-mode"){mode=!!d.enabled;if(mode)startObs();else stopObs();rerender();}else if(d.type==="artifactory-comment-scrollto"){var r=ranges[d.commentId];if(r){var el=r.startContainer;if(el&&el.nodeType!==1)el=el.parentElement;if(el&&el.scrollIntoView)el.scrollIntoView({behavior:"smooth",block:"center"});}}});post({type:"artifactory-comment-ready",highlightsSupported:true});})();</script>
+<!-- __artifactory_anchor_fix__ -->
+<script>(function(){document.addEventListener("click",function(e){var a=e.target&&e.target.closest&&e.target.closest('a[href^="#"]');if(!a||a.hasAttribute("target"))return;var href=a.getAttribute("href");if(!href||href==="#")return;var id=href.slice(1);var el=document.getElementById(id)||document.querySelector('[name="'+CSS.escape(id)+'"]');if(!el)return;e.preventDefault();el.scrollIntoView({behavior:"smooth",block:"start"});try{history.pushState(null,"","#"+id);}catch(_){}},true);})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base target="_blank">
+<title>Cognitive Distortion Identifier</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root {
+  /* Palette: Restrained — clinical calm, not cold */
+  --paper: oklch(98.5% 0.003 240);       /* barely-blue white */
+  --ink: oklch(22% 0.01 240);            /* near-black with blue cast */
+  --accent: oklch(52% 0.14 160);         /* teal-green — growth, not alarm */
+  --accent-light: oklch(92% 0.04 160);
+  --accent-press: oklch(44% 0.14 160);
+  --mute: oklch(55% 0.02 240);           /* gray-blue caption */
+  --border: oklch(88% 0.01 240);
+  --surface: oklch(96% 0.005 240);
+  --warn: oklch(62% 0.16 30);            /* warm amber for highlights */
+  --warn-light: oklch(94% 0.04 30);
+
+  /* Type */
+  --font-body: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Menlo, monospace;
+
+  /* Scale (4pt) */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px;
+  --sp-6: 24px; --sp-8: 32px; --sp-10: 40px; --sp-12: 48px; --sp-16: 64px;
+}
+
+html { font-size: 16px; }
+body {
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.6;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Tab navigation --- */
+.tab-bar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--ink);
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+}
+.tab-btn {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: var(--sp-3) var(--sp-5);
+  background: none;
+  border: none;
+  color: oklch(72% 0.01 240);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tab-btn:hover { color: oklch(90% 0.01 240); }
+.tab-btn[aria-selected="true"] {
+  color: oklch(95% 0.04 160);
+  border-bottom-color: var(--accent);
+}
+
+/* --- Panels --- */
+.panel { display: none; flex: 1; overflow-y: auto; padding: var(--sp-8) var(--sp-6); }
+.panel.active { display: block; }
+.panel-inner { max-width: 56ch; margin: 0 auto; }
+
+/* --- Drill-down tool --- */
+.drill-header {
+  margin-bottom: var(--sp-8);
+}
+.drill-header h1 {
+  font-family: var(--font-ui);
+  font-size: clamp(1.25rem, 3vw, 1.625rem);
+  font-weight: 700;
+  margin-bottom: var(--sp-2);
+}
+.drill-header p {
+  font-size: 0.9375rem;
+  color: var(--mute);
+  line-height: 1.5;
+}
+
+/* Step indicators */
+.step-indicator {
+  display: flex;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-6);
+}
+.step-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 0.2s;
+}
+.step-dot.active { background: var(--accent); }
+.step-dot.done { background: var(--accent-press); }
+
+/* Question flow */
+.question-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: var(--sp-6);
+  margin-bottom: var(--sp-5);
+}
+.question-card h2 {
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin-bottom: var(--sp-4);
+  color: var(--ink);
+}
+.question-card p {
+  font-size: 0.875rem;
+  color: var(--mute);
+  margin-bottom: var(--sp-4);
+}
+
+/* Option list */
+.options { list-style: none; display: flex; flex-direction: column; gap: var(--sp-3); }
+.option-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--ink);
+  transition: border-color 0.15s, background 0.15s;
+  line-height: 1.45;
+}
+.option-btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+.option-btn.selected {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  font-weight: 500;
+}
+
+/* Result card */
+.result-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: var(--sp-6);
+  margin-bottom: var(--sp-5);
+}
+.result-card h2 {
+  font-family: var(--font-ui);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--accent-press);
+  margin-bottom: var(--sp-3);
+}
+.result-card .distortion-name {
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: var(--sp-2);
+}
+.result-card .definition {
+  font-size: 0.9375rem;
+  margin-bottom: var(--sp-4);
+  line-height: 1.55;
+}
+.result-card .example {
+  font-size: 0.875rem;
+  color: var(--mute);
+  font-style: italic;
+  padding-left: var(--sp-4);
+  border-left: 2px solid var(--accent-light);
+  margin-bottom: var(--sp-4);
+}
+.result-card .reframe {
+  background: var(--accent-light);
+  padding: var(--sp-4);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.result-card .reframe strong {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: block;
+  margin-bottom: var(--sp-1);
+  color: var(--accent-press);
+}
+
+/* Navigation buttons */
+.nav-row {
+  display: flex;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+}
+.btn {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: var(--sp-2) var(--sp-5);
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn:hover { border-color: var(--accent); }
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.btn-primary:hover { background: var(--accent-press); border-color: var(--accent-press); }
+
+/* --- Glossary --- */
+.glossary-search {
+  width: 100%;
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: var(--sp-6);
+  background: var(--surface);
+  color: var(--ink);
+}
+.glossary-search:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.glossary-entry {
+  margin-bottom: var(--sp-6);
+  padding-bottom: var(--sp-6);
+  border-bottom: 1px solid var(--border);
+}
+.glossary-entry:last-child { border-bottom: none; }
+.glossary-entry h3 {
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: var(--sp-2);
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+}
+.glossary-entry h3 .num {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--mute);
+  font-weight: 400;
+}
+.glossary-entry .def { font-size: 0.9375rem; margin-bottom: var(--sp-3); line-height: 1.55; }
+.glossary-entry .signals {
+  font-size: 0.8125rem;
+  color: var(--mute);
+  margin-bottom: var(--sp-2);
+}
+.glossary-entry .signals strong {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  color: var(--ink);
+}
+.glossary-entry .ex {
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--mute);
+  padding-left: var(--sp-4);
+  border-left: 2px solid var(--border);
+  margin-top: var(--sp-2);
+}
+.glossary-entry .untwist {
+  margin-top: var(--sp-3);
+  background: var(--accent-light);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+.glossary-entry .untwist strong {
+  font-family: var(--font-ui);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.6875rem;
+  color: var(--accent-press);
+}
+
+/* --- About tab --- */
+.about-section h2 {
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: var(--sp-3);
+  margin-top: var(--sp-6);
+}
+.about-section h2:first-child { margin-top: 0; }
+.about-section p, .about-section li {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  margin-bottom: var(--sp-3);
+}
+.about-section ul { padding-left: var(--sp-5); }
+.citation {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--mute);
+  background: var(--surface);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: 4px;
+  margin-top: var(--sp-4);
+  line-height: 1.6;
+}
+
+/* --- Site map --- */
+.sitemap-group { margin-bottom: var(--sp-10); }
+.sitemap-group > h2 {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--mute);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--sp-5);
+}
+/* Screen index */
+.sitemap-screens { list-style: none; display: flex; flex-direction: column; gap: var(--sp-1); }
+.sitemap-screens li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  font-size: 0.9375rem;
+}
+.sitemap-screens .tag {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--mute);
+  min-width: 3ch;
+}
+.sitemap-screens a {
+  color: var(--accent-press);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent-light);
+}
+.sitemap-screens a:hover { border-bottom-color: var(--accent); }
+
+/* Question tree */
+.tree-node {
+  border-top: 1px solid var(--border);
+  padding-top: var(--sp-4);
+  margin-top: var(--sp-4);
+}
+.tree-node:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+.tree-q {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+.tree-q .qid {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--mute);
+  white-space: nowrap;
+}
+.tree-q .qtext {
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+.tree-opts { list-style: none; display: flex; flex-direction: column; gap: var(--sp-2); padding-left: var(--sp-5); }
+.tree-opts li {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--sp-3);
+  align-items: baseline;
+}
+.tree-opts .dest {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  color: var(--mute);
+}
+.tree-opts .dest.leads-q { color: var(--mute); }
+.tree-opts .dest.leads-r {
+  color: var(--accent-press);
+  font-weight: 600;
+}
+.tree-opts .arrow { color: var(--border); }
+
+/* Outcome map */
+.sitemap-outcomes { list-style: none; display: flex; flex-direction: column; }
+.outcome-row {
+  display: grid;
+  grid-template-columns: 3ch 1fr;
+  gap: var(--sp-4);
+  padding: var(--sp-4) 0;
+  border-top: 1px solid var(--border);
+}
+.outcome-row:first-child { border-top: none; padding-top: 0; }
+.outcome-row .onum {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--mute);
+}
+.outcome-row .oname {
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin-bottom: var(--sp-1);
+}
+.outcome-row .odef { font-size: 0.875rem; color: var(--mute); line-height: 1.5; margin-bottom: var(--sp-2); }
+.outcome-row .oreframe {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  background: var(--accent-light);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: 4px;
+}
+.outcome-row .oreframe strong {
+  font-family: var(--font-ui);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.625rem;
+  color: var(--accent-press);
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* --- Colophon --- */
+.colophon {
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  color: var(--mute);
+  text-align: center;
+  padding: var(--sp-4) var(--sp-6);
+  border-top: 1px solid var(--border);
+}
+
+/* --- Responsive --- */
+@media (max-width: 480px) {
+  .panel { padding: var(--sp-5) var(--sp-4); }
+  .tab-btn { padding: var(--sp-2) var(--sp-3); font-size: 0.6875rem; }
+}
+</style>
+</head>
+<body>
+
+<nav class="tab-bar" role="tablist" aria-label="Main navigation">
+  <button class="tab-btn" role="tab" aria-selected="true" aria-controls="panel-tool" id="tab-tool">Identify</button>
+  <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-glossary" id="tab-glossary">Glossary</button>
+  <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-sitemap" id="tab-sitemap">Site Map</button>
+  <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-about" id="tab-about">About</button>
+</nav>
+
+<!-- ====== TOOL PANEL ====== -->
+<main class="panel active" id="panel-tool" role="tabpanel" aria-labelledby="tab-tool">
+  <div class="panel-inner">
+    <div class="drill-header">
+      <h1>Identify the Distortion</h1>
+      <p>Walk through a short series of questions about a thought you're having. This tool will help you name the cognitive distortion pattern — and offer a way to reframe it.</p>
+    </div>
+    <div class="step-indicator" id="steps"></div>
+    <div id="drill-container"></div>
+  </div>
+</main>
+
+<!-- ====== GLOSSARY PANEL ====== -->
+<section class="panel" id="panel-glossary" role="tabpanel" aria-labelledby="tab-glossary">
+  <div class="panel-inner">
+    <h1 style="font-family:var(--font-ui);font-size:clamp(1.25rem,3vw,1.625rem);font-weight:700;margin-bottom:var(--sp-2);">Glossary of Cognitive Distortions</h1>
+    <p style="font-size:0.875rem;color:var(--mute);margin-bottom:var(--sp-6);">Based on David D. Burns, M.D. — <em>Feeling Good: The New Mood Therapy</em> (1980) and <em>The Feeling Good Handbook</em> (1989/1999).</p>
+    <input type="search" class="glossary-search" placeholder="Filter by name or keyword..." id="glossary-filter" aria-label="Filter glossary entries">
+    <div id="glossary-list"></div>
+  </div>
+</section>
+
+<!-- ====== SITE MAP PANEL ====== -->
+<section class="panel" id="panel-sitemap" role="tabpanel" aria-labelledby="tab-sitemap">
+  <div class="panel-inner">
+    <h1 style="font-family:var(--font-ui);font-size:clamp(1.25rem,3vw,1.625rem);font-weight:700;margin-bottom:var(--sp-2);">Site Map</h1>
+    <p style="font-size:0.875rem;color:var(--mute);margin-bottom:var(--sp-6);">Every screen, question, answer path, and outcome in one place — a complete map of the tool for reviewers. Nothing is hidden behind a click here.</p>
+    <div id="sitemap-body"></div>
+  </div>
+</section>
+
+<!-- ====== ABOUT PANEL ====== -->
+<section class="panel" id="panel-about" role="tabpanel" aria-labelledby="tab-about">
+  <div class="panel-inner about-section">
+    <h2>What is this tool?</h2>
+    <p>This is an interactive self-reflection aid based on Cognitive Behavioral Therapy (CBT). It helps you identify common patterns of distorted thinking — automatic thought habits that can amplify negative emotions and drive unhelpful behaviors.</p>
+
+    <h2>The Thought–Emotion–Behavior Cycle</h2>
+    <p>At the core of CBT is a simple but powerful model: your <strong>thoughts</strong> interpret events, which shape your <strong>emotions</strong>, which drive your <strong>behaviors</strong> — and those behaviors feed back into new thoughts. Cognitive distortions live in the <em>thoughts</em> layer. They're the interpretive patterns that collapse nuance into extremes, amplify negative feelings, and narrow your behavioral options.</p>
+    <p>By naming the distortion, you create space between the automatic thought and your response — space where self-compassion, balanced evidence, and more adaptive choices can emerge.</p>
+
+    <h2>The Ten Distortions</h2>
+    <p>David D. Burns identified ten common cognitive distortions in his landmark work. Each represents a systematic error in thinking — not a character flaw, but a <em>habit</em> that can be noticed, named, and gently questioned.</p>
+
+    <h2>The Ten Ways to Untwist</h2>
+    <p>Burns also provided ten counter-techniques — practical methods for challenging distorted thoughts. They include examining evidence, the double-standard method, experimental testing, thinking in shades of gray, and cost-benefit analysis. Each is mapped in the glossary.</p>
+
+    <h2>How to use this</h2>
+    <ul>
+      <li>Notice a thought that's causing strong negative emotion.</li>
+      <li>Use the <strong>Identify</strong> tab to walk through the drill-down.</li>
+      <li>Read the result — name the pattern, see an example, try the reframe.</li>
+      <li>Use the <strong>Glossary</strong> tab for full definitions and techniques.</li>
+    </ul>
+
+    <h2>Important</h2>
+    <p>This tool is <strong>educational and reflective</strong>, not clinical. It does not replace professional therapy. If you're struggling, reach out:</p>
+    <ul>
+      <li><strong>EAP / Resources for Living:</strong> 1-833-721-2323 (ResourcesforLiving.com/Amazon)</li>
+      <li><strong>International:</strong> amazon.helpwhereyouare.com</li>
+      <li><strong>Crisis Line:</strong> 988 (Suicide & Crisis Lifeline)</li>
+    </ul>
+
+    <div class="citation">
+      Burns, David D. <em>Feeling Good: The New Mood Therapy.</em> New York: William Morrow, 1980.<br>
+      Burns, David D. <em>The Feeling Good Handbook.</em> New York: Plume, 1999.<br>
+      Thought–Emotion–Behavior cycle model (CBT; Beck, 1976; Gross, 2002).
+    </div>
+  </div>
+</section>
+
+<footer class="colophon">
+  Source: David D. Burns, M.D. &middot; Not a substitute for professional help &middot; MHW Community Resource
+</footer>
+
+<script>
+// ===== DATA =====
+const DISTORTIONS = [
+  {
+    id: 'all-or-nothing',
+    name: 'All-or-Nothing Thinking',
+    shortDef: 'You look at things in absolute, black and white categories.',
+    fullDef: 'You see things in black-or-white categories. If a situation falls short of perfect, you see it as a total failure. When a young woman on a diet ate a spoonful of ice cream, she told herself, "I\'ve blown my diet completely." This thought upset her so much that she gobbled down an entire quart of ice cream.',
+    signals: 'Words like "always," "never," "completely," "totally," "ruined," "perfect," "disaster"',
+    example: '"I made one mistake in the presentation, so the whole thing was a disaster."',
+    untwist: 'Thinking in Shades of Gray — evaluate on a range of 0 to 100. Think about the experience as a partial success rather than a complete failure. See what you can learn.',
+    emotions: ['frustration', 'shame', 'hopelessness'],
+    behaviors: ['giving up', 'perfectionism', 'avoidance']
+  },
+  {
+    id: 'overgeneralization',
+    name: 'Overgeneralization',
+    shortDef: 'You view a single negative event as a never-ending pattern of defeat.',
+    fullDef: 'You see a single negative event, such as a romantic rejection or a career reversal, as a never-ending pattern of defeat by using words such as "always" or "never" when you think about it. A depressed salesman became terribly upset when he noticed bird dung on the windshield of his car. He told himself, "Just my luck! Birds are always crapping on my car!"',
+    signals: '"Always," "never," "every time," "just my luck," "nothing ever works"',
+    example: '"I got rejected for one job — I\'ll never get hired anywhere."',
+    untwist: 'Examine the Evidence — instead of assuming your negative thought is true, examine the actual evidence. List several things you have done successfully.',
+    emotions: ['hopelessness', 'depression', 'resignation'],
+    behaviors: ['withdrawal', 'not trying', 'passivity']
+  },
+  {
+    id: 'mental-filter',
+    name: 'Mental Filter',
+    shortDef: 'You dwell on the negatives and ignore the positives.',
+    fullDef: 'You pick out a single negative detail and dwell on it exclusively so that your vision of all reality becomes darkened, like the drop of ink that discolors a beaker of water. Example: You receive many positive comments about your presentation to a group of associates at work, but one of them says something mildly critical. You obsess about his reaction for days and ignore all the positive feedback.',
+    signals: 'Fixating on one criticism, replaying one bad moment, ignoring positive data',
+    example: '"Everyone praised my talk, but one person seemed unimpressed — the whole thing was terrible."',
+    untwist: 'The Survey Method / Examine the Evidence — write down all the feedback, positive and negative. Notice the ratio. Ask: would I judge a friend this way?',
+    emotions: ['sadness', 'inadequacy', 'anxiety'],
+    behaviors: ['rumination', 'avoidance of feedback', 'isolation']
+  },
+  {
+    id: 'discounting-positives',
+    name: 'Discounting the Positives',
+    shortDef: 'You insist that your accomplishments or positive qualities "don\'t count."',
+    fullDef: 'You reject positive experiences by insisting they "don\'t count." If you do a good job, you may tell yourself that it wasn\'t good enough or that anyone could have done as well. Discounting the positive takes the joy out of life and makes you feel inadequate and unrewarded.',
+    signals: '"Anyone could do that," "it was just luck," "that doesn\'t really count," "yes, but..."',
+    example: '"I got the promotion, but anyone in my position would have — it doesn\'t mean I\'m actually good."',
+    untwist: 'The Double-Standard Method — talk to yourself in the same compassionate way you would talk to a friend with a similar achievement. Would you dismiss theirs?',
+    emotions: ['inadequacy', 'emptiness', 'joylessness'],
+    behaviors: ['not celebrating', 'overworking', 'minimizing achievements']
+  },
+  {
+    id: 'jumping-to-conclusions',
+    name: 'Jumping to Conclusions',
+    shortDef: 'You interpret things negatively without facts to support your conclusion.',
+    fullDef: 'You interpret things negatively when there are no facts to support your conclusion. Mind reading: Without checking it out, you arbitrarily conclude that someone is reacting negatively to you. Fortune-telling: You predict that things will turn out badly. Before a test you may tell yourself, "I\'m really going to blow it. What if I flunk?"',
+    signals: '"They must think...," "I just know...," "What if...," "This is going to...," assuming without evidence',
+    example: '"My manager didn\'t smile at me — she must be planning to fire me."',
+    untwist: 'The Experimental Technique — test the validity of your thought. Also: Examine the Evidence. Ask yourself what facts support this conclusion vs. what you\'re assuming.',
+    emotions: ['anxiety', 'dread', 'paranoia'],
+    behaviors: ['avoidance', 'preemptive withdrawal', 'over-preparation']
+  },
+  {
+    id: 'magnification',
+    name: 'Magnification or Minimization',
+    shortDef: 'You blow things way out of proportion or shrink their importance inappropriately.',
+    fullDef: 'You exaggerate the importance of your problems and shortcomings, or you minimize the importance of your desirable qualities. This is also called the "binocular trick." You magnify your imperfections and minimize your strengths so you feel inferior.',
+    signals: 'Catastrophizing small setbacks, dismissing large accomplishments, "binocular trick"',
+    example: '"I stumbled over one word in my talk — everyone will remember that. But the standing ovation was just politeness."',
+    untwist: 'Cost-Benefit Analysis — list advantages and disadvantages of magnifying or minimizing. Ask: am I looking through the wrong end of the binoculars?',
+    emotions: ['anxiety', 'inferiority', 'inadequacy'],
+    behaviors: ['over-preparing', 'self-deprecation', 'avoiding recognition']
+  },
+  {
+    id: 'emotional-reasoning',
+    name: 'Emotional Reasoning',
+    shortDef: 'You reason from how you feel: "I feel it, so it must be true."',
+    fullDef: 'You assume that your negative emotions necessarily reflect the way things really are: "I feel terrified about going on airplanes. It must be very dangerous to fly." Or "I feel guilty. I must be a rotten person." Or "I feel angry. This proves I\'m being treated unfairly." Or "I feel so inferior. This means I\'m a second-rate person."',
+    signals: '"I feel...therefore I am/it is," treating emotions as evidence, "it feels true so it must be"',
+    example: '"I feel like an idiot, so I really must be one."',
+    untwist: 'Identify the Distortion + Examine the Evidence — feelings are real but they\'re not facts. Ask: what is the actual evidence, separate from how I feel right now?',
+    emotions: ['guilt', 'shame', 'fear', 'inferiority'],
+    behaviors: ['procrastination', 'avoidance', 'acting on impulse']
+  },
+  {
+    id: 'should-statements',
+    name: '"Should" Statements',
+    shortDef: 'You criticize yourself or others with "Shoulds," "Musts," "Oughts," or "Have tos."',
+    fullDef: 'You tell yourself that things should be the way you hoped or expected them to be. After playing a difficult piece on the piano, a gifted pianist told herself, "I shouldn\'t have made so many mistakes." This made her feel so disgusted that she quit practicing for several days. "Musts," "oughts" and "have tos" are similar offenders. Should statements directed against yourself lead to guilt and frustration. Should statements directed against other people or the world lead to anger and frustration.',
+    signals: '"Should," "shouldn\'t," "must," "ought to," "have to" — directed at self, others, or the world',
+    example: '"I should have known better. I must be more disciplined. He ought to be more considerate."',
+    untwist: 'The Semantic Method — substitute less emotionally loaded language. Instead of "I shouldn\'t have made that mistake," say "It would be better if I hadn\'t made that mistake."',
+    emotions: ['guilt', 'frustration', 'anger', 'resentment'],
+    behaviors: ['self-punishment', 'procrastination', 'rebelliousness']
+  },
+  {
+    id: 'labeling',
+    name: 'Labeling',
+    shortDef: 'You identify with your shortcomings — "I\'m a loser" instead of "I made a mistake."',
+    fullDef: 'Labeling is an extreme form of all-or-nothing thinking. Instead of saying "I made a mistake," you attach a negative label to yourself: "I\'m a loser." You might also label yourself "a fool" or "a failure" or "a jerk." Labeling is quite irrational because you are not the same as what you do. Human beings exist, but "fools," "losers," and "jerks" do not. These labels are just useless abstractions that lead to anger, anxiety, frustration, and low self-esteem.',
+    signals: '"I\'m a...[negative label]," equating self with a single action, global character judgments of self or others',
+    example: '"I forgot the meeting — I\'m such a failure. He cut me off in traffic — he\'s a complete jerk."',
+    untwist: 'Define Terms — ask "What is the definition of a \'loser\'?" You\'ll feel better when you see that there is no such thing as a "fool" or a "loser." Stick to describing the specific behavior.',
+    emotions: ['shame', 'anger', 'low self-esteem', 'hostility'],
+    behaviors: ['self-isolation', 'giving up', 'hostile interactions']
+  },
+  {
+    id: 'personalization-blame',
+    name: 'Personalization and Blame',
+    shortDef: 'You blame yourself for something you weren\'t entirely responsible for, or you blame others entirely.',
+    fullDef: 'Personalization occurs when you hold yourself personally responsible for an event that isn\'t entirely under your control. When a woman received a note that her child was having difficulties at school, she told herself, "This shows what a bad mother I am." Some people do the opposite — they blame other people or their circumstances for their problems, and they overlook ways that they might be contributing to the problem. Blame usually doesn\'t work very well because other people will resent being scapegoated.',
+    signals: '"It\'s all my fault," "if only I had...," OR "it\'s entirely their fault," avoiding any self-examination',
+    example: '"My child is struggling in school — I\'m a terrible parent." OR "Our project failed entirely because of my coworker."',
+    untwist: 'Re-attribution — think about the many factors that may have contributed. Focus on solving the problem instead of using up all your energy blaming yourself or others.',
+    emotions: ['guilt', 'shame', 'anger', 'helplessness'],
+    behaviors: ['over-apologizing', 'controlling', 'blame-shifting']
+  }
+];
+
+// Drill-down decision tree
+const QUESTIONS = [
+  {
+    id: 'q1',
+    text: 'Think about the thought that\'s bothering you. Which feels closest?',
+    subtitle: 'Don\'t worry about getting it exactly right — go with your gut.',
+    options: [
+      { label: 'I\'m judging myself or a situation in extremes — all good or all bad, success or failure', next: 'q-extreme' },
+      { label: 'I\'m predicting bad outcomes or assuming what others think', next: 'q-assume' },
+      { label: 'I\'m using my feelings as proof that something is true', next: 'q-feeling' },
+      { label: 'I\'m using words like "should," "must," or labeling myself/others', next: 'q-language' },
+      { label: 'I\'m blaming — either taking all the blame or giving it all away', next: 'r-personalization-blame' }
+    ]
+  },
+  {
+    id: 'q-extreme',
+    text: 'When you think in extremes, which pattern feels more familiar right now?',
+    options: [
+      { label: 'I see this one situation as black-or-white, with no middle ground', next: 'r-all-or-nothing' },
+      { label: 'I\'m treating one event as a pattern — "this always happens"', next: 'r-overgeneralization' },
+      { label: 'I\'m zeroing in on the one negative thing and ignoring everything else', next: 'q-filter-or-discount' },
+      { label: 'I\'m blowing something small way out of proportion (or shrinking something important)', next: 'r-magnification' }
+    ]
+  },
+  {
+    id: 'q-filter-or-discount',
+    text: 'Are you filtering in the negative, or discounting the positive?',
+    options: [
+      { label: 'I\'m dwelling on the one bad thing and can\'t stop thinking about it', next: 'r-mental-filter' },
+      { label: 'Good things happened, but I keep telling myself they "don\'t count"', next: 'r-discounting-positives' }
+    ]
+  },
+  {
+    id: 'q-assume',
+    text: 'What kind of assumption are you making?',
+    options: [
+      { label: 'I\'m assuming what someone else thinks or feels about me (mind reading)', next: 'r-jumping-to-conclusions' },
+      { label: 'I\'m predicting that something bad is going to happen (fortune telling)', next: 'r-jumping-to-conclusions' },
+      { label: 'Actually, I think I\'m blowing a real thing out of proportion', next: 'r-magnification' }
+    ]
+  },
+  {
+    id: 'q-feeling',
+    text: 'You mentioned feelings-as-evidence. Which resonates?',
+    options: [
+      { label: '"I feel bad, therefore something IS bad" — my emotion feels like proof', next: 'r-emotional-reasoning' },
+      { label: 'Actually, it\'s more that I\'m magnifying how bad this is', next: 'r-magnification' },
+      { label: 'I think I\'m labeling myself based on the feeling ("I feel stupid, so I AM stupid")', next: 'r-labeling' }
+    ]
+  },
+  {
+    id: 'q-language',
+    text: 'What kind of language pattern are you noticing?',
+    options: [
+      { label: '"Should," "must," "ought to," "have to" — directed at myself, others, or the world', next: 'r-should-statements' },
+      { label: 'I\'m attaching a global label — "I\'m a loser," "they\'re an idiot"', next: 'r-labeling' },
+      { label: 'I\'m telling myself this always/never happens (extreme words)', next: 'r-overgeneralization' }
+    ]
+  }
+];
+
+// ===== APP STATE =====
+let currentStep = 0;
+let history = [];
+
+// ===== RENDER =====
+function getQuestion(id) { return QUESTIONS.find(q => q.id === id); }
+function getDistortion(id) { return DISTORTIONS.find(d => d.id === id); }
+
+function renderSteps() {
+  const el = document.getElementById('steps');
+  const total = 4; // max depth
+  el.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'step-dot' + (i < currentStep ? ' done' : '') + (i === currentStep ? ' active' : '');
+    el.appendChild(dot);
+  }
+}
+
+function renderQuestion(qId) {
+  const container = document.getElementById('drill-container');
+  const q = getQuestion(qId);
+  if (!q) return;
+
+  container.innerHTML = `
+    <div class="question-card">
+      <h2>${q.text}</h2>
+      ${q.subtitle ? `<p>${q.subtitle}</p>` : ''}
+      <ul class="options">
+        ${q.options.map((opt, i) => `
+          <li><button class="option-btn" data-next="${opt.next}" data-idx="${i}">${opt.label}</button></li>
+        `).join('')}
+      </ul>
+    </div>
+    ${history.length > 0 ? `<div class="nav-row"><button class="btn" id="back-btn">Back</button><button class="btn" id="restart-btn">Start over</button></div>` : ''}
+  `;
+
+  container.querySelectorAll('.option-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const next = btn.dataset.next;
+      history.push(qId);
+      currentStep++;
+      if (next.startsWith('r-')) {
+        renderResult(next.replace('r-', ''));
+      } else {
+        renderQuestion(next);
+      }
+      renderSteps();
+    });
+  });
+
+  const backBtn = document.getElementById('back-btn');
+  if (backBtn) backBtn.addEventListener('click', goBack);
+  const restartBtn = document.getElementById('restart-btn');
+  if (restartBtn) restartBtn.addEventListener('click', restart);
+}
+
+function renderResult(distortionId) {
+  const container = document.getElementById('drill-container');
+  const d = getDistortion(distortionId);
+  if (!d) return;
+
+  container.innerHTML = `
+    <div class="result-card">
+      <h2>Pattern Identified</h2>
+      <div class="distortion-name">${d.name}</div>
+      <div class="definition">${d.fullDef}</div>
+      <div class="example">${d.example}</div>
+      <div class="reframe">
+        <strong>Try this reframe</strong>
+        ${d.untwist}
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="btn" id="back-btn">Back</button>
+      <button class="btn btn-primary" id="restart-btn">Identify another thought</button>
+    </div>
+  `;
+
+  document.getElementById('back-btn').addEventListener('click', goBack);
+  document.getElementById('restart-btn').addEventListener('click', restart);
+}
+
+function goBack() {
+  if (history.length === 0) return;
+  currentStep--;
+  const prev = history.pop();
+  renderQuestion(prev);
+  renderSteps();
+}
+
+function restart() {
+  currentStep = 0;
+  history = [];
+  renderQuestion('q1');
+  renderSteps();
+}
+
+// ===== GLOSSARY =====
+function renderGlossary(filter = '') {
+  const list = document.getElementById('glossary-list');
+  const term = filter.toLowerCase();
+  const filtered = DISTORTIONS.filter(d =>
+    !term || d.name.toLowerCase().includes(term) || d.shortDef.toLowerCase().includes(term) ||
+    d.signals.toLowerCase().includes(term) || d.fullDef.toLowerCase().includes(term)
+  );
+
+  list.innerHTML = filtered.map((d, i) => `
+    <div class="glossary-entry">
+      <h3><span class="num">${String(i + 1).padStart(2, '0')}</span> ${d.name}</h3>
+      <div class="def">${d.fullDef}</div>
+      <div class="signals"><strong>Signal words/patterns:</strong> ${d.signals}</div>
+      <div class="ex">${d.example}</div>
+      <div class="untwist"><strong>Untwist technique</strong><br>${d.untwist}</div>
+    </div>
+  `).join('');
+}
+
+// ===== SITE MAP =====
+function renderSitemap() {
+  const body = document.getElementById('sitemap-body');
+  const distName = id => (getDistortion(id) || {}).name || id;
+
+  // 1. Screen index
+  const screens = `
+    <div class="sitemap-group">
+      <h2>Screens</h2>
+      <ul class="sitemap-screens">
+        <li><span class="tag">01</span> <a href="#tab-tool" data-goto="tab-tool">Identify</a> — guided drill-down (${QUESTIONS.length} questions, ${DISTORTIONS.length} possible outcomes)</li>
+        <li><span class="tag">02</span> <a href="#tab-glossary" data-goto="tab-glossary">Glossary</a> — all ${DISTORTIONS.length} distortions, searchable, with untwist techniques</li>
+        <li><span class="tag">03</span> <a href="#tab-sitemap" data-goto="tab-sitemap">Site Map</a> — this page</li>
+        <li><span class="tag">04</span> <a href="#tab-about" data-goto="tab-about">About</a> — model, guidance, citations, and help resources</li>
+      </ul>
+    </div>`;
+
+  // 2. Full question tree — every question, every option, every destination
+  const order = ['q1', 'q-extreme', 'q-filter-or-discount', 'q-assume', 'q-feeling', 'q-language'];
+  const treeNodes = order.map(qid => {
+    const q = getQuestion(qid);
+    if (!q) return '';
+    const opts = q.options.map(opt => {
+      const isResult = opt.next.startsWith('r-');
+      const target = isResult ? opt.next.replace('r-', '') : opt.next;
+      const dest = isResult
+        ? `<span class="dest leads-r">${distName(target)}</span>`
+        : `<span class="dest leads-q">${target}</span>`;
+      return `<li><span>${opt.label} <span class="arrow">→</span></span> ${dest}</li>`;
+    }).join('');
+    return `
+      <div class="tree-node">
+        <div class="tree-q"><span class="qid">${q.id}</span><span class="qtext">${q.text}</span></div>
+        <ul class="tree-opts">${opts}</ul>
+      </div>`;
+  }).join('');
+  const tree = `
+    <div class="sitemap-group">
+      <h2>Identify · decision tree — every path</h2>
+      <p style="font-size:0.8125rem;color:var(--mute);margin-bottom:var(--sp-5);line-height:1.5;">Each answer either advances to another question (grey code) or resolves to an outcome (green name). Starts at <code style="font-family:var(--font-mono);font-size:0.8125rem;">q1</code>.</p>
+      ${treeNodes}
+    </div>`;
+
+  // 3. All outcomes
+  const outcomes = `
+    <div class="sitemap-group" style="margin-bottom:0;">
+      <h2>All ${DISTORTIONS.length} outcomes</h2>
+      <ul class="sitemap-outcomes">
+        ${DISTORTIONS.map((d, i) => `
+          <li class="outcome-row">
+            <span class="onum">${String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <div class="oname">${d.name}</div>
+              <div class="odef">${d.shortDef}</div>
+              <div class="oreframe"><strong>Reframe</strong>${d.untwist}</div>
+            </div>
+          </li>`).join('')}
+      </ul>
+    </div>`;
+
+  body.innerHTML = screens + tree + outcomes;
+
+  // Wire the screen-index links to switch tabs
+  body.querySelectorAll('[data-goto]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const btn = document.getElementById(a.dataset.goto);
+      if (btn) btn.click();
+    });
+  });
+}
+
+// ===== TABS =====
+function initTabs() {
+  const btns = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.panel');
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.setAttribute('aria-selected', 'false'));
+      panels.forEach(p => p.classList.remove('active'));
+      btn.setAttribute('aria-selected', 'true');
+      document.getElementById(btn.getAttribute('aria-controls')).classList.add('active');
+    });
+  });
+}
+
+// ===== INIT =====
+initTabs();
+renderSteps();
+renderQuestion('q1');
+renderGlossary();
+renderSitemap();
+
+document.getElementById('glossary-filter').addEventListener('input', (e) => {
+  renderGlossary(e.target.value);
+});
+</script>
+</body>
+</html>
